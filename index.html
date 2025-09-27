@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>信用卡回饋查詢 (按鈕統一大小)</title>
+    <style>
+        /* 重置基礎樣式，確保固定欄位正確定位 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+        }
+
+        h1, h2 { color: #333; }
+        
+        /* 置頂導覽列容器樣式 */
+        #fixed-header {
+            position: fixed; /* 固定在視窗上 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 100;
+            padding: 20px; /* 整體內邊距 */
+            box-sizing: border-box; 
+        }
+
+        /* 頂部標題 */
+        #fixed-header > h1 {
+            margin: 0 0 20px 0;
+            font-size: 2em;
+        }
+
+        /* 三個主要導覽區塊的 Flex 容器 */
+        #top-navigation {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* 單個導覽區塊 */
+        .nav-section {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd; /* 增加邊框 */
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        .nav-section h2 {
+            font-size: 1.1em;
+            margin: 0 0 8px 0;
+            padding: 0;
+        }
+        
+        /* 標題與管理按鈕排版 */
+        .header-group { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 5px; 
+        }
+
+        /* 搜尋輸入框樣式調整 */
+        .search-container {
+            display: flex;
+            align-items: center;
+        }
+        .search-container input {
+            flex-grow: 1;
+            margin: 0;
+            padding: 8px 12px;
+            border-radius: 4px 0 0 4px;
+            border-right: none;
+        }
+        .search-container button {
+            margin: 0;
+            padding: 8px 12px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* 按鈕容器 */
+        .button-scroll-container {
+            max-height: 50px; 
+            overflow-y: auto;
+            padding-top: 2px;
+        }
+        
+        /* --- 關鍵變動：統一按鈕尺寸 --- */
+        
+        /* 一般/管理按鈕樣式 */
+        button { cursor: pointer; background-color: #1890ff; color: white; border: none; padding: 6px 10px; border-radius: 4px; transition: background-color 0.3s; font-size: 0.9em; }
+        .manage-btn { background-color: #faad14; margin: 0; padding: 4px 8px; font-size: 0.9em; border-radius: 4px; }
+
+        /* 常用通路和卡片按鈕的統一設置 */
+        .card-button, .merchant-button {
+            display: inline-flex; /* 使用 inline-flex 允許內部元素對齊 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            
+            /* 統一尺寸 */
+            min-width: 80px; /* 最小寬度，防止過短 */
+            height: 28px;    /* 固定高度 */
+            
+            /* 其他樣式 */
+            color: white;
+            padding: 4px 10px;
+            margin: 3px 5px 3px 0;
+            border-radius: 15px;
+            text-align: center; /* 確保文字在按鈕內居中 */
+            white-space: nowrap; /* 防止文字換行 */
+            overflow: hidden; /* 隱藏溢出的文字 */
+            text-overflow: ellipsis; /* 溢出時顯示省略號 */
+        }
+        .card-button { background-color: #007bff; }
+        .merchant-button { background-color: #28a745; }
+        
+        /* 頁面主要內容：動態邊距由 JS 調整 */
+        #main-content {
+            padding: 20px;
+            padding-top: 0; 
+        }
+        
+        /* 搜尋結果區塊樣式 */
+        #searchResultSection {
+            margin-top: 15px;
+        }
+        
+        /* 搜尋結果/卡片詳情樣式 (維持不變) */
+        .card-detail-view { border: 2px solid #007bff; padding: 15px; margin: 10px 0; border-radius: 8px; background-color: #f0f8ff; }
+        .card-detail-view h3 { margin-top: 0; color: #007bff; }
+        .card-note-large { font-style: italic; color: #666; white-space: pre-wrap; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid #ccc; }
+        .reward-group-display { margin-top: 15px; padding: 10px; border-left: 5px solid #ff9900; background-color: #fff; border-radius: 4px; }
+        .reward-group-display strong { color: #ff9900; font-size: 1.1em; }
+        .reward-group-display p { margin: 3px 0; padding-left: 10px; }
+        .reward-group-note { font-size: 0.9em; color: #888; margin-bottom: 5px; }
+
+        .highlight { background: #e6f7ff; border-color: #91d5ff; }
+
+        /* --- Modal 浮動視窗樣式 (恢復為寬鬆版) --- */
+        .modal { 
+            display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); 
+        }
+        .modal-content { 
+            background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 700px; border-radius: 10px; 
+        }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+        .close-btn:hover, .close-btn:focus { color: #000; text-decoration: none; cursor: pointer; }
+        
+        .card-edit-list-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px; 
+            border-bottom: 1px dotted #ccc;
+        }
+        
+        .merchant-item {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 8px;
+             padding: 5px;
+             border: 1px solid #eee;
+             border-radius: 4px;
+        }
+
+        .reward-group-item { 
+            border: 1px solid #ddd;
+            flex-direction: column;
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        
+        .reward-group-item > div:first-child { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 10px;
+        }
+        .reward-group-item input { margin-right: 5px; }
+
+        .reward-item {
+            display: flex; 
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+        .reward-item input { margin-right: 10px; flex-grow: 1; }
+        .reward-item button, .merchant-item button { background-color: #dc3545; padding: 6px 10px; }
+        .add-group-btn { background-color: #4CAF50; margin-top: 10px;}
+        
+    </style>
+</head>
+<body>
+    
+    <div id="fixed-header">
+        <h1>信用卡回饋查詢</h1>
+        
+        <div id="top-navigation">
+            
+            <div class="nav-section">
+                <div class="header-group">
+                    <h2>快速查詢</h2>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="search" placeholder="輸入通路名稱, 例如：IKEA">
+                    <button onclick="searchMerchant()">查詢</button>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="header-group">
+                    <h2>常用通路</h2>
+                    <button class="manage-btn" onclick="showMerchantManagerModal()">管理</button>
+                </div>
+                <div id="commonMerchants" class="button-scroll-container"></div>
+            </div>
+
+            <div class="nav-section">
+                <div class="header-group">
+                    <h2>所有信用卡</h2>
+                    <button class="manage-btn" onclick="showCardManagerModal()">管理</button>
+                </div>
+                <div id="allCardsButtons" class="button-scroll-container"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="main-content">
+        <div id="searchResultSection">
+            <h2>搜尋結果</h2>
+            <div id="searchResult">
+                <p>請輸入通路名稱，或點選上方的卡片/常用通路按鈕進行查詢。</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="merchantModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('merchantModal')">&times;</span>
+            <h3>管理常用通路</h3>
+            <div id="modalMerchantContainer"></div>
+            <input type="text" id="newMerchantInput" placeholder="新的通路名稱">
+            <button onclick="addCommonMerchant()">新增通路</button>
+            <button onclick="saveCommonMerchants()" style="float: right; margin-top: 10px;">完成</button>
+        </div>
+    </div>
+    
+    <div id="cardManagerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('cardManagerModal')">&times;</span>
+            <h3>管理信用卡</h3>
+            <p>點擊卡片名稱進行編輯，或點擊下方按鈕新增。</p>
+            <div id="cardEditList"></div>
+            <button onclick="showEditModal(-1)" style="margin-top: 15px;">新增新卡片</button>
+        </div>
+    </div>
+    
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('cardModal')">&times;</span>
+            <h3 id="modalTitle">新增卡片</h3>
+            <label>卡片名稱:</label>
+            <input type="text" id="modalCardName" placeholder="卡片名稱" style="width: 100%; margin-bottom: 5px;">
+            <label>卡片層級註解 (可多行):</label>
+            <textarea id="modalCardNote" placeholder="例如：入帳日隔天回饋 ~12/31" style="width: 100%; margin-bottom: 10px; height: 50px;"></textarea>
+
+            <label>權益組列表:</label>
+            <div id="modalRewardsGroupContainer"></div>
+            <button class="add-group-btn" onclick="addModalRewardGroup()">新增權益組</button>
+            <button onclick="saveCard()" style="float: right; margin-top: 10px;">儲存並返回</button>
+        </div>
+    </div>
+
+    <script>
+        // --- JS 修正重點：動態計算置頂欄高度，推開 main-content ---
+        function setMainContentPadding() {
+            const header = document.getElementById('fixed-header');
+            const mainContent = document.getElementById('main-content');
+            const headerHeight = header.offsetHeight;
+            mainContent.style.paddingTop = `${headerHeight + 10}px`;
+        }
+
+        window.addEventListener('resize', setMainContentPadding);
+        window.addEventListener('load', setMainContentPadding);
+
+        // 初始資料：維持不變
+        let cards = [
+            {
+                name: "FLY GO卡",
+                cardNote: "四捨五入\n入帳日隔天回饋 ~12/31",
+                groups: [
+                    {
+                        name: "好好刷",
+                        groupNote: "",
+                        rewards: [
+                            {merchant: "7-11", percent: 3.0, note: ""},
+                            {merchant: "全家", percent: 3.0, note: ""},
+                            {merchant: "萊爾富", percent: 3.0, note: ""}
+                        ]
+                    },
+                    {
+                        name: "爽爽刷",
+                        groupNote: "指定通路最高 10%",
+                        rewards: [
+                            {merchant: "Uber", percent: 10.0, note: "需登錄"},
+                            {merchant: "IKEA", percent: 10.0, note: "限量"}
+                        ]
+                    },
+                    {
+                        name: "出門刷",
+                        groupNote: "",
+                        rewards: [
+                            {merchant: "海外", percent: 5.0, note: ""},
+                            {merchant: "Airbnb", percent: 5.0, note: ""}
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "UBEAR卡",
+                cardNote: "",
+                groups: [
+                    {
+                        name: "指定通路",
+                        groupNote: "",
+                        rewards: [
+                            {merchant: "Uber", percent: 2.0, note: ""},
+                            {merchant: "7-11", percent: 2.0, note: ""},
+                            {merchant: "IKEA", percent: 2.0, note: ""}
+                        ]
+                    }
+                ]
+            }
+        ];
+        
+        let commonMerchants = ["7-11", "蝦皮", "全聯", "IKEA", "Uber"];
+
+        let editingCardIndex = -1;
+
+        // --- 渲染與初始化 ---
+
+        function renderCardButtons() {
+            const container = document.getElementById("allCardsButtons");
+            container.innerHTML = "";
+            cards.forEach(card => {
+                const button = document.createElement("button");
+                button.className = "card-button";
+                button.textContent = card.name;
+                button.onclick = () => quickSearch(card.name, true);
+                container.appendChild(button);
+            });
+        }
+        
+        function renderMerchantButtons() {
+            const container = document.getElementById("commonMerchants");
+            container.innerHTML = "";
+            commonMerchants.forEach(merchant => {
+                const button = document.createElement("button");
+                button.className = "merchant-button";
+                button.textContent = merchant;
+                button.onclick = () => quickSearch(merchant);
+                container.appendChild(button);
+            });
+        }
+
+        function init() {
+            renderCardButtons();
+            renderMerchantButtons();
+            setMainContentPadding();
+        }
+
+        // --- 搜尋功能 (維持不變) ---
+
+        function searchMerchant(keywordOverride = null, isCardQuery = false) {
+            const keyword = keywordOverride || document.getElementById("search").value.trim();
+            const resultDiv = document.getElementById("searchResult");
+            resultDiv.innerHTML = "";
+            document.getElementById("search").value = keyword; 
+            
+            if (!keyword) {
+                 resultDiv.innerHTML = "<p>請輸入通路名稱，或點選上方的卡片/常用通路按鈕進行查詢。</p>";
+                 return;
+            }
+
+            if (isCardQuery) {
+                const card = cards.find(c => c.name === keyword);
+                if (card) {
+                    displayCardDetail(card);
+                } else {
+                     resultDiv.innerHTML = `<p>查無卡片 "${keyword}" 的詳細資訊。</p>`;
+                }
+                return;
+            }
+            
+            let results = [];
+            cards.forEach(card => {
+                card.groups.forEach(group => {
+                    group.rewards.forEach(r => {
+                        if (r.merchant.toLowerCase().includes(keyword.toLowerCase())) {
+                            results.push({
+                                card: card.name, 
+                                group: group.name, 
+                                merchant: r.merchant, 
+                                percent: r.percent, 
+                                note: r.note,
+                            });
+                        }
+                    });
+                });
+            });
+            
+            results.sort((a, b) => b.percent - a.percent); 
+            resultDiv.innerHTML = `<p>通路: 與 "${keyword}" 相關的回饋結果 (由高至低)</p>`;
+            
+            if (results.length === 0) {
+                resultDiv.innerHTML = `<p>查無與 "${keyword}" 相關的回饋結果</p>`;
+            } else {
+                results.forEach(r => {
+                    const noteText = r.note ? ` (<span style="color: blue; font-weight: normal;">${r.note}</span>)` : '';
+                    const div = document.createElement("div");
+                    div.className = "card highlight";
+                    div.innerHTML = `
+                        <strong>${r.card}</strong> - 
+                        <span style="color: #ff9900;">${r.group}</span> - 
+                        ${r.merchant}: 
+                        <strong style="color: green;">${r.percent}%</strong>
+                        ${noteText}
+                    `;
+                    resultDiv.appendChild(div);
+                });
+            }
+        }
+
+        function displayCardDetail(card) {
+            const resultDiv = document.getElementById("searchResult");
+            resultDiv.innerHTML = "";
+
+            const detailDiv = document.createElement("div");
+            detailDiv.className = "card-detail-view";
+            detailDiv.innerHTML = `<h3>${card.name} 詳情</h3>`;
+            
+            if (card.cardNote) {
+                detailDiv.innerHTML += `<div class="card-note-large">${card.cardNote}</div>`;
+            }
+
+            card.groups.forEach(group => {
+                const groupDiv = document.createElement("div");
+                groupDiv.className = "reward-group-display";
+                groupDiv.innerHTML = `<strong>${group.name}</strong>`;
+                
+                if (group.groupNote) {
+                    groupDiv.innerHTML += `<div class="reward-group-note">${group.groupNote}</div>`;
+                }
+
+                group.rewards.forEach(r => {
+                    const noteText = r.note ? ` (<span style="color: blue;">${r.note}</span>)` : '';
+                    groupDiv.innerHTML += `<p>• ${r.merchant}: <strong style="color: green;">${r.percent}%</strong>${noteText}</p>`;
+                });
+                detailDiv.appendChild(groupDiv);
+            });
+
+            resultDiv.appendChild(detailDiv);
+        }
+
+        function quickSearch(name, isCardQuery = false) {
+            document.getElementById("search").value = name;
+            searchMerchant(name, isCardQuery);
+        }
+
+        // --- 常用通路管理 ---
+
+        function showMerchantManagerModal() {
+            const container = document.getElementById("modalMerchantContainer");
+            container.innerHTML = '';
+            
+            commonMerchants.forEach((merchant) => {
+                const div = document.createElement("div");
+                div.className = "merchant-item";
+                div.innerHTML = `
+                    <input type="text" value="${merchant}" class="modal-merchant-name" style="width: 80%; padding: 8px 12px; margin: 5px 0;">
+                    <button onclick="this.parentNode.remove()">移除</button>
+                `;
+                container.appendChild(div);
+            });
+            document.getElementById("merchantModal").style.display = "block";
+        }
+        
+        function addCommonMerchant() {
+            const input = document.getElementById("newMerchantInput");
+            const newMerchant = input.value.trim();
+            if (!newMerchant) return;
+            
+            const container = document.getElementById("modalMerchantContainer");
+            const div = document.createElement("div");
+            div.className = "merchant-item";
+            div.innerHTML = `
+                <input type="text" value="${newMerchant}" class="modal-merchant-name" style="width: 80%; padding: 8px 12px; margin: 5px 0;">
+                <button onclick="this.parentNode.remove()">移除</button>
+            `;
+            container.appendChild(div);
+            input.value = '';
+        }
+
+        function saveCommonMerchants() {
+            const updatedMerchants = [];
+            document.querySelectorAll("#modalMerchantContainer .modal-merchant-name").forEach(input => {
+                const merchant = input.value.trim();
+                if (merchant && !updatedMerchants.includes(merchant)) {
+                    updatedMerchants.push(merchant);
+                }
+            });
+            commonMerchants = updatedMerchants;
+            renderMerchantButtons();
+            closeModal('merchantModal');
+        }
+
+        // --- 卡片管理功能 ---
+        
+        function showCardManagerModal() {
+            const listContainer = document.getElementById("cardEditList");
+            listContainer.innerHTML = '';
+            
+            cards.forEach((card, index) => {
+                const div = document.createElement("div");
+                div.className = "card-edit-list-item";
+                div.innerHTML = `
+                    <span>${card.name}</span>
+                    <div>
+                        <button class="edit-btn" onclick="showEditModal(${index})">編輯</button>
+                        <button class="delete-btn" onclick="deleteCard(${index})">刪除</button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+            document.getElementById("cardManagerModal").style.display = "block";
+        }
+
+        function showEditModal(cardIndex) {
+            editingCardIndex = cardIndex;
+            document.getElementById("cardManagerModal").style.display = "none"; 
+
+            const container = document.getElementById("modalRewardsGroupContainer");
+            container.innerHTML = '';
+            
+            let cardData = { name: '', cardNote: '', groups: [] };
+
+            if (cardIndex === -1) {
+                document.getElementById("modalTitle").textContent = "新增卡片";
+                addModalRewardGroup(); 
+            } else {
+                cardData = JSON.parse(JSON.stringify(cards[cardIndex]));
+                document.getElementById("modalTitle").textContent = `編輯卡片: ${cardData.name}`;
+                
+                cardData.groups.forEach((group, groupIndex) => {
+                    addModalRewardGroup(group.name, group.groupNote, group.rewards, groupIndex);
+                });
+                if (cardData.groups.length === 0) {
+                    addModalRewardGroup();
+                }
+            }
+            
+            document.getElementById("modalCardName").value = cardData.name;
+            document.getElementById("modalCardNote").value = cardData.cardNote;
+            document.getElementById("cardModal").style.display = "block";
+        }
+
+        function addModalRewardGroup(groupName = '', groupNote = '', rewards = [], groupIndex = -1) {
+            const container = document.getElementById("modalRewardsGroupContainer");
+            const groupDiv = document.createElement("div");
+            groupDiv.className = "reward-group-item";
+            
+            const header = document.createElement('div');
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.innerHTML = `
+                <input type="text" value="${groupName}" placeholder="權益組名稱 (ex: 好好刷)" class="modal-group-name" style="width: 45%;">
+                <input type="text" value="${groupNote}" placeholder="權益組註解 (ex: 需登錄)" class="modal-group-note" style="width: 45%;">
+                <button style="background: #e66; margin: 0;" onclick="this.parentNode.parentNode.remove()">移除權益組</button>
+            `;
+            groupDiv.appendChild(header);
+
+            const rewardsContainer = document.createElement('div');
+            rewardsContainer.className = 'rewards-sub-container';
+            rewardsContainer.style.marginTop = '10px';
+            groupDiv.appendChild(rewardsContainer);
+            
+            const addRewardBtn = document.createElement('button');
+            addRewardBtn.textContent = '新增回饋項目';
+            addRewardBtn.style.backgroundColor = '#607d8b';
+            addRewardBtn.onclick = () => addModalReward(rewardsContainer);
+            groupDiv.appendChild(addRewardBtn);
+
+            if (rewards.length > 0) {
+                rewards.forEach(r => addModalReward(rewardsContainer, r.merchant, r.percent, r.note));
+            } else {
+                 addModalReward(rewardsContainer);
+            }
+
+            container.appendChild(groupDiv);
+        }
+
+        function addModalReward(container, merchant = '', percent = '', note = '') {
+            const div = document.createElement("div");
+            div.className = "reward-item";
+            div.innerHTML = `
+                <input type="text" value="${merchant}" placeholder="通路名稱" class="modal-merchant" style="width: 25%;">
+                <input type="number" value="${percent}" placeholder="回饋 %" step="0.1" class="modal-percent" style="width: 15%;">
+                <input type="text" value="${note}" placeholder="附註 (ex: 限量)" class="modal-note" style="width: 40%;">
+                <button onclick="this.parentNode.remove()">移除</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function saveCard() {
+            const cardName = document.getElementById("modalCardName").value.trim();
+            const cardNote = document.getElementById("modalCardNote").value.trim();
+            if (!cardName) {
+                alert("卡片名稱不能為空");
+                return;
+            }
+
+            const groups = [];
+            const groupItems = document.querySelectorAll("#modalRewardsGroupContainer .reward-group-item");
+            let isValid = true;
+
+            groupItems.forEach(groupItem => {
+                const groupName = groupItem.querySelector(".modal-group-name").value.trim();
+                const groupNote = groupItem.querySelector(".modal-group-note").value.trim();
+                const rewards = [];
+                
+                if (!groupName) {
+                    alert("請為所有權益組命名。");
+                    isValid = false;
+                    return;
+                }
+
+                const rewardItems = groupItem.querySelectorAll(".reward-item");
+                rewardItems.forEach(item => {
+                    const merchant = item.querySelector(".modal-merchant").value.trim();
+                    const percent = parseFloat(item.querySelector(".modal-percent").value);
+                    const note = item.querySelector(".modal-note").value.trim();
+                    
+                    if (merchant && !isNaN(percent)) {
+                        rewards.push({ merchant, percent, note });
+                    } else if (merchant || !isNaN(percent)) {
+                        alert(`權益組 [${groupName}] 中有未填寫完整的項目。請移除或填寫完整。`);
+                        isValid = false;
+                    }
+                });
+                
+                if (rewards.length > 0) {
+                     groups.push({ name: groupName, groupNote: groupNote, rewards: rewards });
+                }
+            });
+
+            if (!isValid) return;
+
+            let newCardData = { name: cardName, cardNote: cardNote, groups: groups };
+            
+            if (editingCardIndex === -1) {
+                cards.push(newCardData);
+            } else {
+                cards[editingCardIndex] = newCardData;
+            }
+
+            closeModal('cardModal');
+            renderCardButtons(); 
+        }
+
+        function deleteCard(cardIndex) {
+             if (confirm(`確定要刪除卡片 ${cards[cardIndex].name} 及其所有回饋嗎?`)) {
+                cards.splice(cardIndex, 1);
+                showCardManagerModal(); 
+                renderCardButtons();
+             }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+            if (modalId === 'cardModal') {
+                showCardManagerModal();
+            }
+        }
+
+        // 初始化執行
+        init();
+    </script>
+</body>
+</html>
