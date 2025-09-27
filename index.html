@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>Credit card Back List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div id="fixed-header">
+        <div id="fixed-header-content">
+            <h1>信用卡回饋查詢</h1>
+            
+            <div id="top-navigation">
+                
+                <div class="nav-section">
+                    <div class="header-group"><h2>快速查詢</h2></div>
+                    <div class="search-container">
+                        <input type="text" id="search" placeholder="輸入通路名稱或註解關鍵字, 例如：IKEA 或 需登錄">
+                        <button onclick="searchMerchant()">查詢</button>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="header-group">
+                        <h2>常用通路</h2>
+                    </div>
+                    <div id="commonMerchants" class="button-scroll-container"></div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="header-group">
+                        <h2>所有信用卡</h2>
+                    </div>
+                    <div id="allCardsButtons" class="button-scroll-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="app-container">
+        <div id="main-content">
+            <div id="searchResultSection">
+                <h2>搜尋結果</h2>
+                <div id="searchResult">
+                    <p>請輸入通路名稱，或點選上方的卡片/常用通路按鈕進行查詢。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
