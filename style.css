@@ -29,17 +29,44 @@ h1, h2 { color: #333; }
 
 #fixed-header-content > h1 { margin: 0 0 20px 0; font-size: 2em; }
 
+/* 桌面版：使用 Grid 佈局，分為 3 個欄位 */
 #top-navigation { 
     display: grid; 
     gap: 15px; 
-    grid-template-columns: 400px 1fr 1fr; 
+    grid-template-columns: 400px 1fr 1fr; /* 快速查詢較寬 */
 }
 
+/* --- 手機響應式調整 (關鍵) --- */
 @media (max-width: 900px) {
+    /* 在寬度小於 900px 時，所有欄位變成 100% 寬度（單欄垂直堆疊） */
     #top-navigation {
         grid-template-columns: 1fr; 
     }
+    
+    /* 調整手機標題大小，減少佔用空間 */
+    #fixed-header-content > h1 { 
+        font-size: 1.5em; /* 標題縮小 */
+        margin-bottom: 10px;
+    }
+
+    /* 調整手機導覽區塊內邊距，更緊湊 */
+    .nav-section {
+        padding: 8px;
+    }
+
+    /* 調整常用通路和卡片按鈕容器高度，避免佔用太多螢幕空間 */
+    .button-scroll-container {
+        max-height: 40px; /* 略微降低高度 */
+    }
+
+    /* 調整查詢按鈕和輸入框大小 */
+    .search-container input, .search-container button {
+        padding: 6px 10px;
+        font-size: 0.85em;
+    }
 }
+/* --- 手機響應式調整 結束 --- */
+
 
 .nav-section {
     display: flex;
