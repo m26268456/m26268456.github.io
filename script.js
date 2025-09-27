@@ -864,17 +864,32 @@
 let cards = DEFAULT_CARDS; 
 let commonMerchants = DEFAULT_MERCHANTS;
 
-// --- 渲染與初始化 ---
-
+// 渲染到桌面版和手機版的兩個容器中
 function renderCardButtons() {
-    const container = document.getElementById("allCardsButtons");
-    container.innerHTML = "";
+    const desktopContainer = document.getElementById("allCardsButtons");
+    const mobileContainer = document.getElementById("mobileCardButtons");
+    
+    desktopContainer.innerHTML = "";
+    mobileContainer.innerHTML = ""; // 清空手機版容器
+    
     cards.forEach(card => {
-        const button = document.createElement("button");
-        button.className = "card-button";
-        button.textContent = card.name;
-        button.onclick = () => quickSearch(card.name, true);
-        container.appendChild(button);
+        // 創建按鈕元素的邏輯
+        const createButton = () => {
+            const button = document.createElement("button");
+            button.className = "card-button";
+            button.textContent = card.name;
+            button.onclick = () => {
+                quickSearch(card.name, true);
+                // 手機版點擊後應關閉選單
+                if (window.innerWidth <= 900) {
+                    toggleCardMenu(false); 
+                }
+            };
+            return button;
+        };
+
+        desktopContainer.appendChild(createButton());
+        mobileContainer.appendChild(createButton()); // 渲染到手機版容器
     });
 }
 
@@ -1087,6 +1102,19 @@ function displayCardDetail(card) {
 function quickSearch(name, isCardQuery = false) {
     document.getElementById("search").value = name;
     searchMerchant(name, isCardQuery);
+}
+
+// 手機選單切換邏輯
+function toggleCardMenu(forceState) {
+    const menu = document.getElementById('mobileCardMenu');
+    if (forceState !== undefined) {
+        menu.style.display = forceState ? 'block' : 'none';
+    } else {
+        // 確保只在手機版才切換選單
+        if (window.innerWidth <= 900) {
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+    }
 }
 
 // 初始化執行

@@ -27,7 +27,22 @@ h1, h2 { color: #333; }
     box-sizing: border-box;
 }
 
-#fixed-header-content > h1 { margin: 0 0 20px 0; font-size: 2em; }
+/* D. 新增標題容器佈局 */
+#header-title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* D. 漢堡選單按鈕樣式 */
+#menu-toggle-btn {
+    display: none; /* 預設在桌面版隱藏 */
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+}
+
+#header-title-container h1 { margin: 0 0 20px 0; font-size: 2em; }
 
 /* 桌面版：使用 Grid 佈局，分為 3 個欄位 */
 #top-navigation { 
@@ -44,9 +59,22 @@ h1, h2 { color: #333; }
     }
     
     /* 調整手機標題大小，減少佔用空間 */
-    #fixed-header-content > h1 { 
+    #header-title-container h1 { 
         font-size: 1.5em; /* 標題縮小 */
-        margin-bottom: 10px;
+        margin: 0;
+    }
+    #fixed-header-content {
+        padding: 10px 20px 10px 20px; /* 縮小頂部整體 padding */
+    }
+
+    /* 1. 隱藏原有的「所有信用卡」區塊，為其他內容騰出空間 */
+    #all-cards-nav-section {
+        display: none !important; 
+    }
+
+    /* 2. 顯示漢堡選單按鈕 */
+    #menu-toggle-btn {
+        display: block; 
     }
 
     /* 調整手機導覽區塊內邊距，更緊湊 */
@@ -164,3 +192,53 @@ button {
 .reward-group-display strong { color: #ff9900; font-size: 1.1em; }
 .reward-group-display p { margin: 3px 0; padding-left: 10px; }
 .reward-group-note { font-size: 0.9em; color: #888; margin-bottom: 5px; }
+
+/* --- 新增：手機選單樣式 --- */
+.mobile-menu {
+    display: none; /* 預設隱藏 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white; /* 全白背景 */
+    z-index: 500; /* 高於所有其他元素 */
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.mobile-menu .menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.mobile-menu .menu-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #007bff;
+}
+
+.mobile-menu .close-btn {
+    background: none;
+    color: #333;
+    font-size: 2em;
+    padding: 0;
+}
+
+.mobile-menu .button-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* 按鈕間距 */
+}
+
+/* 確保選單內的卡片按鈕能換行 */
+.mobile-menu .card-button {
+    flex-grow: 1; /* 讓按鈕在選單內自動延伸填滿空間 */
+    min-width: 100px; 
+    height: 35px;
+}

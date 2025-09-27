@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Credit card Back List</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
     <div id="fixed-header">
         <div id="fixed-header-content">
-            <h1>信用卡回饋查詢</h1>
+            <div id="header-title-container"> 
+                <h1>信用卡回饋查詢</h1>
+                <button id="menu-toggle-btn" onclick="toggleCardMenu()">≡ 卡片選單</button>
+            </div>
             
             <div id="top-navigation">
                 
@@ -29,7 +32,7 @@
                     <div id="commonMerchants" class="button-scroll-container"></div>
                 </div>
 
-                <div class="nav-section">
+                <div class="nav-section" id="all-cards-nav-section">
                     <div class="header-group">
                         <h2>所有信用卡</h2>
                     </div>
@@ -48,6 +51,14 @@
                 </div>
             </div>
         </div>
+    </div>
+    
+    <div id="mobileCardMenu" class="mobile-menu">
+        <div class="menu-header">
+            <h3>所有信用卡</h3>
+            <button class="close-btn" onclick="toggleCardMenu()">✕</button>
+        </div>
+        <div id="mobileCardButtons" class="button-list-container"></div>
     </div>
 
     <script src="script.js"></script>
