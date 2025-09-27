@@ -1,4 +1,4 @@
-/* 重置基礎樣式 */
+/* --- 基礎重置與排版 --- */
 html, body {
     margin: 0;
     padding: 0;
@@ -7,13 +7,12 @@ html, body {
 }
 h1, h2 { color: #333; }
 
-/* 頁面主容器與左右留白 */
 #app-container {
     padding: 0 20px 20px 20px; 
     box-sizing: border-box;
 }
 
-/* 置頂導覽列容器樣式 */
+/* --- 置頂導覽列 --- */
 #fixed-header {
     position: fixed; 
     top: 0; left: 0; width: 100%;
@@ -23,34 +22,25 @@ h1, h2 { color: #333; }
     box-sizing: border-box; 
 }
 
-/* 置頂導覽列的內容區 (與 #app-container 邊距同步) */
 #fixed-header-content {
     padding: 20px 20px 10px 20px;
     box-sizing: border-box;
 }
 
-/* 頂部標題 */
 #fixed-header-content > h1 { margin: 0 0 20px 0; font-size: 2em; }
 
-/* 調整三個區塊的寬度比例 */
 #top-navigation { 
     display: grid; 
     gap: 15px; 
-    /* 400px (快速查詢固定寬度) : 1fr (常用通路) : 1fr (所有卡片) */
     grid-template-columns: 400px 1fr 1fr; 
 }
 
-/* 響應式調整：當螢幕變窄時，改為堆疊顯示 */
 @media (max-width: 900px) {
     #top-navigation {
-        grid-template-columns: 1fr; /* 小螢幕下，全部佔滿 100% */
-    }
-    .nav-section:first-child { 
-        width: 100%; 
+        grid-template-columns: 1fr; 
     }
 }
 
-/* 單個導覽區塊 */
 .nav-section {
     display: flex;
     flex-direction: column; border: 1px solid #ddd;
@@ -59,10 +49,8 @@ h1, h2 { color: #333; }
 
 .nav-section h2 { font-size: 1.1em; margin: 0 0 8px 0; padding: 0; }
 
-/* 標題與管理按鈕排版 */
 .header-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
 
-/* 搜尋輸入框樣式調整 */
 .search-container { display: flex; align-items: center; }
 .search-container input {
     flex-grow: 1; margin: 0; padding: 8px 12px;
@@ -70,7 +58,6 @@ h1, h2 { color: #333; }
 }
 .search-container button { margin: 0; padding: 8px 12px; border-radius: 0 4px 4px 0; }
 
-/* 按鈕容器 */
 .button-scroll-container {
     max-height: 50px; 
     overflow-y: auto;
@@ -79,39 +66,45 @@ h1, h2 { color: #333; }
     flex-wrap: wrap;
 }
 
-/* 拖曳按鈕樣式 */
-button { cursor: pointer; background-color: #1890ff; color: white; border: none; padding: 6px 10px; border-radius: 4px; transition: background-color 0.3s; font-size: 0.9em; }
-.manage-btn { background-color: #faad14; margin: 0; padding: 4px 8px; font-size: 0.9em; border-radius: 4px; }
+/* --- 全域按鈕樣式 --- */
+button { 
+    cursor: pointer; 
+    background-color: #1890ff; 
+    color: white; 
+    border: none; 
+    padding: 6px 10px; 
+    border-radius: 4px; 
+    transition: background-color 0.3s; 
+    font-size: 0.9em; 
+}
+
 .card-button, .merchant-button {
     display: inline-flex; justify-content: center; align-items: center; 
     min-width: 80px; height: 28px; color: white; padding: 4px 10px;
     margin: 3px 5px 3px 0; border-radius: 15px; text-align: center; 
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    cursor: grab;
+    cursor: pointer; 
 }
 .card-button { background-color: #007bff; }
 .merchant-button { background-color: #28a745; }
-.dragging { opacity: 0.5; border: 2px solid #ff9900; }
 
-/* 頁面主要內容：動態邊距由 JS 調整 */
+/* --- 內容與結果區塊 --- */
 #main-content {
     padding-top: 0; 
 }
 
-/* 搜尋結果區塊置中與限制寬度 */
 #searchResultSection {
     max-width: 800px; 
     margin: 20px auto 0 auto; 
     padding: 0;
 }
-/* 確保搜尋結果內容繼承置中效果 */
 #searchResult {
     text-align: left;
 }
 
-/* 關鍵字高亮樣式 (柔和版) */
+/* 關鍵字高亮樣式 */
 .highlight { 
-    background-color: #ddd; /* 淺灰色背景 */
+    background-color: #ddd; 
     color: #333;             
     padding: 2px 4px;
     border-radius: 3px;
@@ -123,8 +116,8 @@ button { cursor: pointer; background-color: #1890ff; color: white; border: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #e6e6fa; /* 淺紫色背景 */
-    color: #4b0082; /* 深紫色文字 */
+    background-color: #e6e6fa; 
+    color: #4b0082; 
     padding: 8px 12px;
     margin: 3px 0;
     border-radius: 4px;
@@ -132,11 +125,11 @@ button { cursor: pointer; background-color: #1890ff; color: white; border: none;
 }
 .note-match-types {
     font-size: 0.8em;
-    color: #6a5acd; /* 柔和紫色 */
+    color: #6a5acd; 
     font-weight: normal;
 }
 
-/* 搜尋結果/卡片詳情樣式 */
+/* 卡片詳情樣式 */
 .card-detail-view { border: 2px solid #007bff; padding: 15px; margin: 10px 0; border-radius: 8px; background-color: #f0f8ff; }
 .card-detail-view h3 { margin-top: 0; color: #007bff; }
 .card-note-large { font-style: italic; color: #666; white-space: pre-wrap; margin-bottom: 10px; padding-left: 5px; border-left: 3px solid #ccc; }
@@ -144,41 +137,3 @@ button { cursor: pointer; background-color: #1890ff; color: white; border: none;
 .reward-group-display strong { color: #ff9900; font-size: 1.1em; }
 .reward-group-display p { margin: 3px 0; padding-left: 10px; }
 .reward-group-note { font-size: 0.9em; color: #888; margin-bottom: 5px; }
-
-/* Modal 樣式 */
-.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
-.modal-content { 
-    background-color: #fff; 
-    margin: 5% auto; 
-    padding: 20px; 
-    border: 1px solid #888; 
-    width: 90%; 
-    max-width: 700px; 
-    border-radius: 10px; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-}
-.close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
-.close-btn:hover, .close-btn:focus { color: #000; text-decoration: none; cursor: pointer; }
-
-/* 管理介面樣式 */
-.card-edit-list-item { 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 8px; border-bottom: 1px dotted #ccc; 
-}
-/* 修正按鈕間距：這是您提出修正的關鍵點 */
-.card-edit-list-item button.delete-btn {
-    margin-left: 8px; /* 在刪除按鈕前增加間距 */
-    background-color: #dc3545; /* 確保刪除按鈕為紅色 */
-}
-.card-edit-list-item button.edit-btn {
-    background-color: #007bff; /* 確保編輯按鈕為藍色 */
-}
-
-.merchant-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 5px; border: 1px solid #eee; border-radius: 4px; }
-.reward-group-item { border: 1px solid #ddd; flex-direction: column; padding: 15px; margin-bottom: 15px; border-radius: 4px; background-color: #f9f9f9; }
-.reward-group-item > div:first-child { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.reward-item { display: flex; align-items: center; margin-bottom: 8px; padding: 5px 0; }
-.reward-item input { margin-right: 10px; flex-grow: 1; }
-.reward-group-item input, .merchant-item input { padding: 8px 12px; margin: 5px 0; }
-.reward-item button, .merchant-item button { background-color: #dc3545; padding: 6px 10px; }
-.add-group-btn { background-color: #4CAF50; margin-top: 10px;}

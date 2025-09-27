@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Credit card Back List</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
@@ -24,7 +24,6 @@
                 <div class="nav-section">
                     <div class="header-group">
                         <h2>常用通路</h2>
-                        <button class="manage-btn" onclick="showMerchantManagerModal()">管理</button>
                     </div>
                     <div id="commonMerchants" class="button-scroll-container"></div>
                 </div>
@@ -32,7 +31,6 @@
                 <div class="nav-section">
                     <div class="header-group">
                         <h2>所有信用卡</h2>
-                        <button class="manage-btn" onclick="showCardManagerModal()">管理</button>
                     </div>
                     <div id="allCardsButtons" class="button-scroll-container"></div>
                 </div>
@@ -48,43 +46,6 @@
                     <p>請輸入通路名稱，或點選上方的卡片/常用通路按鈕進行查詢。</p>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="merchantModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('merchantModal')">&times;</span>
-            <h3>管理常用通路</h3>
-            <div id="modalMerchantContainer"></div>
-            <input type="text" id="newMerchantInput" placeholder="新的通路名稱">
-            <button onclick="addCommonMerchant()">新增通路</button>
-            <button onclick="saveCommonMerchants()" style="float: right; margin-top: 10px;">完成</button>
-        </div>
-    </div>
-    
-    <div id="cardManagerModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('cardManagerModal')">&times;</span>
-            <h3>管理信用卡</h3>
-            <p>點擊卡片名稱進行編輯，或點擊下方按鈕新增。</p>
-            <div id="cardEditList"></div>
-            <button onclick="showEditModal(-1)" style="margin-top: 15px;">新增新卡片</button>
-        </div>
-    </div>
-    
-    <div id="cardModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('cardModal')">&times;</span>
-            <h3 id="modalTitle">新增卡片</h3>
-            <label>卡片名稱:</label>
-            <input type="text" id="modalCardName" placeholder="卡片名稱" style="width: 100%; margin-bottom: 5px;">
-            <label>卡片層級註解 (可多行):</label>
-            <textarea id="modalCardNote" placeholder="例如：入帳日隔天回饋 ~12/31" style="width: 100%; margin-bottom: 10px; height: 50px;"></textarea>
-
-            <label>權益組列表:</label>
-            <div id="modalRewardsGroupContainer"></div>
-            <button class="add-group-btn" onclick="addModalRewardGroup()">新增權益組</button>
-            <button onclick="saveCard()" style="float: right; margin-top: 10px;">儲存並返回</button>
         </div>
     </div>
 

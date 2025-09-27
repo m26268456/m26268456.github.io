@@ -1,81 +1,868 @@
-// --- 全局變數/資料 ---
-let cards = [
-    {
-        name: "FLY GO卡",
-        cardNote: "四捨五入\n入帳日隔天回饋 ~12/31",
-        groups: [
-            { name: "好好刷", groupNote: "", rewards: [{merchant: "7-11", percent: 3.0, note: ""}, {merchant: "全家", percent: 3.0, note: ""}, {merchant: "萊爾富", percent: 3.0, note: ""}] },
-            { name: "爽爽刷", groupNote: "指定通路最高 10%", rewards: [{merchant: "Uber", percent: 10.0, note: "需登錄"}, {merchant: "IKEA", percent: 10.0, note: "限量"}] },
-            { name: "出門刷", groupNote: "", rewards: [{merchant: "海外", percent: 5.0, note: ""}, {merchant: "Airbnb", percent: 5.0, note: ""}] }
-        ]
-    },
-    {
-        name: "UBEAR卡",
-        cardNote: "",
-        groups: [
-            { name: "指定通路", groupNote: "當期帳單", rewards: [{merchant: "Uber", percent: 2.0, note: "需登錄"}, {merchant: "7-11", percent: 2.0, note: ""}, {merchant: "IKEA", percent: 2.0, note: ""}] }
-        ]
-    }
-];
-let commonMerchants = ["7-11", "蝦皮", "全聯", "IKEA", "Uber"];
-let editingCardIndex = -1;
-
-// --- 拖曳邏輯的核心函式 ---
-function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.card-button, .merchant-button:not(.dragging)')];
-    return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2; 
-        if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-        } else {
-            return closest;
-        }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
-}
-
-function handleDragStart(e) {
-    e.target.classList.add('dragging');
-    e.dataTransfer.setData('text/plain', e.target.textContent);
-    e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragEnd(e) {
-    e.target.classList.remove('dragging');
-}
-
-function handleDragOver(e) {
-    e.preventDefault();
-    const container = e.currentTarget;
-    const afterElement = getDragAfterElement(container, e.clientY);
-    const draggingElement = container.querySelector('.dragging');
-
-    if (afterElement == null) {
-        container.appendChild(draggingElement);
-    } else {
-        container.insertBefore(draggingElement, afterElement);
-    }
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    const container = e.currentTarget;
-    const draggingElement = container.querySelector('.dragging');
-
-    if (!draggingElement) return;
-
-    const newOrderNames = [...container.querySelectorAll('.card-button, .merchant-button')].map(btn => btn.textContent.trim());
-
-    if (draggingElement.classList.contains('merchant-button')) {
-        commonMerchants = newOrderNames;
-    } else if (draggingElement.classList.contains('card-button')) {
-        const newCardOrder = newOrderNames.map(name => cards.find(c => c.name === name));
-        cards = newCardOrder;
-    }
-
-    renderMerchantButtons();
-    renderCardButtons();
-}
+// --- 初始資料定義 (唯一修改資料處) ---
+// 請在此處修改卡片內容
+        const DEFAULT_CARDS = [
+            			{
+				name: "Richart卡",
+				cardNote: "~12/31 https://reurl.cc/bmrG6M\n單筆計算 無條件捨去 入帳日次二營業日回饋\n須設定台新帳戶扣繳台新信用卡帳款",
+				groups: [
+					{ 
+						name: "一般消費", 
+						groupNote: "", 
+						rewards: [{ merchant: "一般消費", percent: 0.3, note: "" }] 
+					},
+					{ 
+						name: "保費", 
+						groupNote: "", 
+						rewards: [{ merchant: "保費", percent: 1.3, note: "免登錄" }] 
+					},
+					{ 
+						name: "Pay著刷", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "台新Pay", percent: 3.8, note: "" },
+							{ merchant: "台灣Pay(TWQR)", percent: 3.8, note: "" }
+						] 
+					},
+					{ 
+						name: "天天刷", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "7-11", percent: 3.3, note: "限台新Pay" },
+							{ merchant: "全家", percent: 3.3, note: "限台新Pay" },
+							{ merchant: "家樂福", percent: 3.3, note: "含線上、超市；不含美食街、商店街" },
+							{ merchant: "大買家", percent: 3.3, note: "含線上；不含美食街、商店街" },
+							{ merchant: "台鐵(台灣鐵路)", percent: 3.3, note: "注意台灣鐵路與台灣高鐵差異#" },
+							{ merchant: "高鐵(台灣高鐵)", percent: 3.3, note: "注意台灣鐵路與台灣高鐵差異#" },
+							{ merchant: "台灣大車隊(55688)", percent: 3.3, note: "" },
+							{ merchant: "LINEGO", percent: 3.3, note: "" },
+							{ merchant: "Yoxi", percent: 3.3, note: "" },
+							{ merchant: "Uber", percent: 3.3, note: "" },
+							{ merchant: "嘟嘟房", percent: 3.3, note: "" },
+							{ merchant: "Autopass(車麻吉)", percent: 3.3, note: "" },
+							{ merchant: "城市車旅", percent: 3.3, note: "" },
+							{ merchant: "ViViPark", percent: 3.3, note: "" },
+							{ merchant: "USPACE", percent: 3.3, note: "" },
+							{ merchant: "UDRIVE", percent: 3.3, note: "" },
+							{ merchant: "iRent", percent: 3.3, note: "" },
+							{ merchant: "和運租車", percent: 3.3, note: "" },
+							{ merchant: "格上租車", percent: 3.3, note: "" }
+						] 
+					},
+					{ 
+						name: "大筆刷", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "新光三越", percent: 3.3, note: "" },
+							{ merchant: "遠東SOGO", percent: 3.3, note: "" },
+							{ merchant: "廣三SOGO", percent: 3.3, note: "" },
+							{ merchant: "遠東百貨", percent: 3.3, note: "" },
+							{ merchant: "微風", percent: 3.3, note: "" },
+							{ merchant: "台北101", percent: 3.3, note: "" },
+							{ merchant: "遠東巨城", percent: 3.3, note: "" },
+							{ merchant: "南紡購物中心", percent: 3.3, note: "" },
+							{ merchant: "漢神百貨", percent: 3.3, note: "" },
+							{ merchant: "漢神巨蛋", percent: 3.3, note: "" },
+							{ merchant: "誠品生活", percent: 3.3, note: "" },
+							{ merchant: "Mitsui Shopping Park LaLaport", percent: 3.3, note: "南港/台中" },
+							{ merchant: "MITSUI OUTLET PARK", percent: 3.3, note: "林口、台中港、台南" },
+							{ merchant: "華泰名品城", percent: 3.3, note: "" },
+							{ merchant: "SKM Park Outlets", percent: 3.3, note: "" },
+							{ merchant: "IKEA", percent: 3.3, note: "含線上" },
+							{ merchant: "特力屋", percent: 3.3, note: "含線上" },
+							{ merchant: "HOLA", percent: 3.3, note: "含線上" },
+							{ merchant: "宜得利", percent: 3.3, note: "含線上" },
+							{ merchant: "瑪黑家居", percent: 3.3, note: "含線上" }
+						] 
+					},
+					{ 
+						name: "好饗刷", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "全台餐飲", percent: 3.3, note: "不含餐券、小額支付" },
+							{ merchant: "Uber Eats", percent: 3.3, note: "" },
+							{ merchant: "Foodpanda", percent: 3.3, note: "" },
+							{ merchant: "拓元售票", percent: 3.3, note: "" },
+							{ merchant: "KKTIX", percent: 3.3, note: "" },
+							{ merchant: "年代售票", percent: 3.3, note: "" },
+							{ merchant: "寬宏售票", percent: 3.3, note: "" },
+							{ merchant: "OPENTIX兩廳院文化生活", percent: 3.3, note: "" },
+							{ merchant: "指定飯店", percent: 3.3, note: "不含餐券、住宿券" },
+							{ merchant: "指定樂園", percent: 3.3, note: "" },
+							{ merchant: "中油直營", percent: 3.3, note: "" },
+							{ merchant: "台亞", percent: 3.3, note: "" },
+							{ merchant: "全國加油", percent: 3.3, note: "" },
+							{ merchant: "源點EVOASIS", percent: 3.3, note: "" },
+							{ merchant: "華城電能EVALUE", percent: 3.3, note: "" }
+						] 
+					},
+					{ 
+						name: "數刷趣", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "蝦皮", percent: 3.3, note: "不含貴金屬、遊戲點數、票券" },
+							{ merchant: "momo", percent: 3.3, note: "" },
+							{ merchant: "酷澎(Coupang)", percent: 3.3, note: "" },
+							{ merchant: "PChome", percent: 3.3, note: "不含儲值、電子票券" },
+							{ merchant: "Yahoo", percent: 3.3, note: "" },
+							{ merchant: "Amazon", percent: 3.3, note: "" },
+							{ merchant: "東森", percent: 3.3, note: "" },
+							{ merchant: "博客來", percent: 3.3, note: "" },
+							{ merchant: "Richart Mart", percent: 3.3, note: "" },
+							{ merchant: "Hahow", percent: 3.3, note: "" },
+							{ merchant: "PressPlay", percent: 3.3, note: "" },
+							{ merchant: "Amazing Talker", percent: 3.3, note: "" },
+							{ merchant: "Udemy", percent: 3.3, note: "" },
+							{ merchant: "Kobo", percent: 3.3, note: "" },
+							{ merchant: "Readmoo", percent: 3.3, note: "" },
+							{ merchant: "UNIQLO", percent: 3.3, note: "不含百貨店中店" },
+							{ merchant: "GU", percent: 3.3, note: "不含百貨店中店" },
+							{ merchant: "ZARA", percent: 3.3, note: "不含百貨店中店" },
+							{ merchant: "NET", percent: 3.3, note: "不含百貨店中店" },
+							{ merchant: "lativ", percent: 3.3, note: "不含百貨店中店" },
+							{ merchant: "GAP", percent: 3.3, note: "不含百貨店中店" }
+						] 
+					},
+					{ 
+						name: "玩旅刷", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "海外消費", percent: 3.3, note: "含實體及線上，消費地為國外、或幣別非台幣" },
+							{ merchant: "華航", percent: 3.3, note: "" },
+							{ merchant: "長榮", percent: 3.3, note: "" },
+							{ merchant: "星宇", percent: 3.3, note: "" },
+							{ merchant: "虎航", percent: 3.3, note: "" },
+							{ merchant: "國泰航空", percent: 3.3, note: "" },
+							{ merchant: "華信", percent: 3.3, note: "" },
+							{ merchant: "立榮", percent: 3.3, note: "" },
+							{ merchant: "Klook", percent: 3.3, note: "" },
+							{ merchant: "KKday", percent: 3.3, note: "" },
+							{ merchant: "AIRSIM", percent: 3.3, note: "" },
+							{ merchant: "Agoda", percent: 3.3, note: "" },
+							{ merchant: "Booking.com", percent: 3.3, note: "" },
+							{ merchant: "Trip.com", percent: 3.3, note: "" },
+							{ merchant: "Airbnb", percent: 3.3, note: "" },
+							{ merchant: "Hotels.com", percent: 3.3, note: "" },
+							{ merchant: "Expedia", percent: 3.3, note: "" },
+							{ merchant: "雄獅旅遊", percent: 3.3, note: "" },
+							{ merchant: "易遊網", percent: 3.3, note: "" },
+							{ merchant: "東南旅遊", percent: 3.3, note: "" }
+						] 
+					},
+					{ 
+						name: "假日刷", 
+						groupNote: "限節假日", 
+						rewards: [
+							{ merchant: "一般消費", percent: 2.0, note: "限實體卡、LINE Pay、街口支付、台新Pay、Google 錢包" }
+						] 
+					}
+				]
+			},
+			{
+				name: "CUBE卡",
+				cardNote: "~12/31 https://reurl.cc/bmrGnd\n單筆計算 四捨五入 入帳日次二營業日回饋",
+				groups: [
+					{ 
+						name: "一般消費", 
+						groupNote: "", 
+						rewards: [{ merchant: "一般消費", percent: 0.3, note: "" }] 
+					},
+					{ 
+						name: "玩數位", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "ChatGPT", percent: 3.0, note: "" },
+							{ merchant: "Canva", percent: 3.0, note: "" },
+							{ merchant: "Claude", percent: 3.0, note: "" },
+							{ merchant: "Cursor", percent: 3.0, note: "" },
+							{ merchant: "Duolingo(多鄰國)", percent: 3.0, note: "" },
+							{ merchant: "Gamma", percent: 3.0, note: "" },
+							{ merchant: "Gemini", percent: 3.0, note: "" },
+							{ merchant: "Notion", percent: 3.0, note: "" },
+							{ merchant: "Perplexity", percent: 3.0, note: "" },
+							{ merchant: "Speak", percent: 3.0, note: "" },
+							{ merchant: "Apple 媒體服務", percent: 3.0, note: "不含 Apple Store 之交易" },
+							{ merchant: "Google Play", percent: 3.0, note: "" },
+							{ merchant: "Disney+", percent: 3.0, note: "" },
+							{ merchant: "Netflix", percent: 3.0, note: "" },
+							{ merchant: "Spotify", percent: 3.0, note: "" },
+							{ merchant: "KKBOX", percent: 3.0, note: "" },
+							{ merchant: "YouTube Premium", percent: 3.0, note: "" },
+							{ merchant: "Max", percent: 3.0, note: "" },
+							{ merchant: "蝦皮購物", percent: 3.0, note: "不含貴金屬、珠寶、遊戲點數、各類實體或電子票券" },
+							{ merchant: "momo購物", percent: 3.0, note: "" },
+							{ merchant: "PChome 24h購物", percent: 3.0, note: "不含儲值及電子票券" },
+							{ merchant: "小樹購", percent: 3.0, note: "不含電子票券" },
+							{ merchant: "Coupang 酷澎", percent: 3.0, note: "" },
+							{ merchant: "淘寶", percent: 3.0, note: "" },
+							{ merchant: "天貓", percent: 3.0, note: "" }
+						] 
+					},
+					{ 
+						name: "樂饗購", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "國內指定百貨", percent: 3.0, note: "不含店中櫃" },
+							{ merchant: "Uber Eats", percent: 3.0, note: "不含Uber One會員" },
+							{ merchant: "foodpanda", percent: 3.0, note: "" },
+							{ merchant: "國內餐飲", percent: 3.0, note: "含小額支付；不含餐券、飯店/酒店/旅館/KTV/酒吧/俱樂部/商場等所設立之餐廳、夜總會、菸酒販賣商" },
+							{ merchant: "麥當勞", percent: 3.0, note: "不含百貨、車站商場、機場美食街、國道服務區美食街等門市" },
+							{ merchant: "康是美", percent: 3.0, note: "含線上；不含貴金屬、儲值、票券、百貨、商場門市" },
+							{ merchant: "屈臣氏", percent: 3.0, note: "含線上；不含百貨、商場門市" }
+						] 
+					},
+					{ 
+						name: "趣旅行", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "大阪萬國博覽會官網", percent: 3.0, note: "" },
+							{ merchant: "SURUTTO QRtto官網", percent: 3.0, note: "" },
+							{ merchant: "大阪美食EXPO (Osaka Gourmet EXPO)", percent: 3.0, note: "" },
+							{ merchant: "海外實體消費", percent: 3.0, note: "限實體卡、感應式刷卡" },
+							{ merchant: "東京迪士尼樂園", percent: 3.0, note: "" },
+							{ merchant: "東京華納兄弟哈利波特影城", percent: 3.0, note: "" },
+							{ merchant: "大阪環球影城(USJ)", percent: 3.0, note: "" },
+							{ merchant: "Apple錢包指定交通卡", percent: 3.0, note: "SUICA、PASMO、ICOCA" },
+							{ merchant: "Uber", percent: 3.0, note: "含國內外" },
+							{ merchant: "Grab", percent: 3.0, note: "不含訂閱" },
+							{ merchant: "台灣高鐵(高鐵)", percent: 3.0, note: "" },
+							{ merchant: "yoxi", percent: 3.0, note: "" },
+							{ merchant: "台灣大車隊(55688)", percent: 3.0, note: "不含機場接送、代駕服務" },
+							{ merchant: "iRent", percent: 3.0, note: "" },
+							{ merchant: "和運租車", percent: 3.0, note: "" },
+							{ merchant: "格上租車", percent: 3.0, note: "" },
+							{ merchant: "指定航空公司", percent: 3.0, note: "" },
+							{ merchant: "國內飯店住宿", percent: 3.0, note: "" },
+							{ merchant: "星野集團", percent: 3.0, note: "" },
+							{ merchant: "全球迪士尼飯店", percent: 3.0, note: "" },
+							{ merchant: "東橫INN", percent: 3.0, note: "" },
+							{ merchant: "KKday", percent: 3.0, note: "" },
+							{ merchant: "Agoda", percent: 3.0, note: "" },
+							{ merchant: "Klook", percent: 3.0, note: "" },
+							{ merchant: "Airbnb", percent: 3.0, note: "" },
+							{ merchant: "Booking.com", percent: 3.0, note: "不含租車、景點、活動、計程車" },
+							{ merchant: "Trip.com", percent: 3.0, note: "" },
+							{ merchant: "指定旅行社", percent: 3.0, note: "" }
+						] 
+					},
+					{ 
+						name: "集精選", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "家樂福", percent: 2.0, note: "不含線上、儲值、商店街、美食街" },
+							{ merchant: "LOPIA台灣", percent: 2.0, note: "不含附屬餐廳" },
+							{ merchant: "全聯", percent: 2.0, note: "含PX Pay；不含全支付、大全聯" },
+							{ merchant: "台灣中油", percent: 2.0, note: "限直營；不含第三方支付" },
+							{ merchant: "7-11", percent: 2.0, note: "限實體門市；含OPEN錢包；不含高速公路服務區、醫院美食街及企業辦公大樓等場域之門市" },
+							{ merchant: "全家", percent: 2.0, note: "限實體門市；含FamiPay；不含全盈支付、儲值、高速公路服務區、醫院美食街及企業辦公大樓等場域之門市" },
+							{ merchant: "IKEA", percent: 2.0, note: "" }
+						] 
+					},
+					{ 
+						name: "慶生月", 
+						groupNote: "本年度已過", 
+						rewards: [{ merchant: "一般消費", percent: 10.0, note: "" }] 
+					},
+					{ 
+						name: "來支付", 
+						groupNote: "", 
+						rewards: [{ merchant: "LINE Pay", percent: 2.0, note: "需綁定三大國際支付始可開通" }] 
+					}
+				]
+			},
+			{
+				name: "Gogoro Rewards卡",
+				cardNote: "~12/31 https://reurl.cc/NxMGvn\n單筆計算 四捨五入\n基本結帳日次日回饋，加碼結帳日次日回饋",
+				groups: [
+					{ 
+						name: "一般消費", 
+						groupNote: "", 
+						rewards: [{ merchant: "一般消費", percent: 1.0, note: "0.5%資費扣繳加碼0.5%" }] 
+					},
+					{ 
+						name: "海外消費", 
+						groupNote: "", 
+						rewards: [{ merchant: "海外消費", percent: 4.0, note: "消費地為國外、或幣別非台幣；0.5%資費扣繳加碼3.5%" }] 
+					},
+					{ 
+						name: "指定通路", 
+						groupNote: "加碼單筆上限100，帳單上限500", 
+						rewards: [
+							{ merchant: "7-11", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "全家便利商店", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "家樂福", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "康是美", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "台灣高鐵", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "Uber", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "Ubereats(Uber Eats)", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "foodpanda", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "易遊網", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "KKday", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
+							{ merchant: "Klook", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" }
+						] 
+					},
+					{ 
+						name: "電池資費", 
+						groupNote: "", 
+						rewards: [{ merchant: "電池資費", percent: 4.0, note: "四捨五入 入帳日次日回饋" }] 
+					},
+					{ 
+						name: "指定資費方案", 
+						groupNote: "", 
+						rewards: [{ merchant: "指定資費方案", percent: 10.0, note: "4%加碼6%；四捨五入 次月月底前回饋" }] 
+					},
+					{ 
+						name: "GoShare", 
+						groupNote: "", 
+						rewards: [{ merchant: "Go Share", percent: 15.0, note: "限GoShare App、LINE Pay、Gogoro Wallet；四捨五入 結帳日次日回饋" }] 
+					},
+					{ 
+						name: "維修保養", 
+						groupNote: "含實體、網路門市；不含社區店", 
+						rewards: [{ merchant: "維修保養", percent: 4.0, note: "1%，資費扣繳加碼1%，綁定錢包加碼2%；1%入帳日次日回饋，1%結帳日次日回饋，加碼2%結帳日隔天回饋" }] 
+					}
+				]
+			},
+			{ 
+				name: "國泰簽帳金融卡",
+				cardNote: "~12/31 https://reurl.cc/89aj3j\n消費總金額 四捨五入\n限生日於1999年7月1日（含）後；現金回饋\n登錄網址：https://www.cathaybk.com.tw/promotion",
+				groups: [
+					{ 
+						name: "指定支付", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "LINE Pay", percent: 2.0, note: "現金回饋" },
+						]
+					},
+					{
+						name: "指定通路", 
+						groupNote: "每月上限150", 
+						rewards: [
+							{ merchant: "蝦皮購物", percent: 3.0, note: "現金回饋" },
+							{ merchant: "麥當勞", percent: 3.0, note: "現金回饋；使用LINE Pay為2%" },
+							{ merchant: "海外實體支付", percent: 3.0, note: "現金回饋" },
+						] 
+					}
+				]
+			},
+			{
+				name: "全支付 (PX Pay Plus)",
+				cardNote: "活動說明：https://reurl.cc/OmNVvg\n通路列表：https://reurl.cc/DO2mjQ\n四捨五入 即時回饋",
+				groups: [
+					{ 
+						name: "實體商店-購物", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "屈臣氏", percent: 3.0, note: "" },
+							{ merchant: "宜家家居", percent: 3.0, note: "" },
+							{ merchant: "OKmart", percent: 3.0, note: "" },
+							{ merchant: "ATT 4 FUN 信義店", percent: 3.0, note: "" },
+							{ merchant: "華泰名品城", percent: 3.0, note: "" },
+							{ merchant: "環球購物中心", percent: 3.0, note: "" },
+							{ merchant: "台茂購物中心", percent: 3.0, note: "" },
+							{ merchant: "CITYLINK", percent: 3.0, note: "" },
+							{ merchant: "NOKE 忠泰樂生活", percent: 3.0, note: "" },
+							{ merchant: "日曜天地", percent: 3.0, note: "" },
+							{ merchant: "美麗華百樂園", percent: 3.0, note: "" },
+							{ merchant: "京站時尚廣場", percent: 3.0, note: "" },
+							{ merchant: "無印良品", percent: 3.0, note: "" },
+							{ merchant: "Adidas", percent: 3.0, note: "" },
+							{ merchant: "昇恆昌", percent: 3.0, note: "內湖旗艦店、松山機場" },
+							{ merchant: "focus時尚流行館", percent: 3.0, note: "" },
+							{ merchant: "林百貨", percent: 3.0, note: "" },
+							{ merchant: "中友百貨", percent: 3.0, note: "" },
+							{ merchant: "桃知道GELEVEN PLAZA", percent: 3.0, note: "" },
+							{ merchant: "統領廣場", percent: 3.0, note: "" },
+							{ merchant: "全國電子", percent: 3.0, note: "" },
+							{ merchant: "鞋全家福", percent: 3.0, note: "" },
+							{ merchant: "昂路名鞋館", percent: 3.0, note: "" },
+							{ merchant: "神腦國際 (門市)", percent: 3.0, note: "" },
+							{ merchant: "振宇五金", percent: 3.0, note: "" },
+							{ merchant: "SAMSUNG", percent: 3.0, note: "" },
+							{ merchant: "Studio A", percent: 3.0, note: "" },
+							{ merchant: "Straight A", percent: 3.0, note: "" },
+							{ merchant: "德誼數位DATA EXPRESS", percent: 3.0, note: "" },
+							{ merchant: "三創生活", percent: 3.0, note: "" },
+							{ merchant: "摩曼頓Momentum", percent: 3.0, note: "" },
+							{ merchant: "NET", percent: 3.0, note: "" },
+							{ merchant: "味全龍職業棒球隊", percent: 3.0, note: "應援店&福利社" },
+							{ merchant: "尚順購物中心", percent: 3.0, note: "" },
+							{ merchant: "屏東太平洋百貨", percent: 3.0, note: "" },
+							{ merchant: "日藥本舖", percent: 3.0, note: "" },
+							{ merchant: "普雷伊", percent: 3.0, note: "" },
+							{ merchant: "禮客OUTLET", percent: 3.0, note: "" },
+							{ merchant: "裕隆城威秀商場", percent: 3.0, note: "配合商場為6,7樓" },
+							{ merchant: "Mamaway", percent: 3.0, note: "" },
+							{ merchant: "華歌爾", percent: 3.0, note: "" },
+							{ merchant: "金車噶瑪蘭威士忌", percent: 3.0, note: "" },
+							{ merchant: "小米之家 台中綠園道專賣店", percent: 3.0, note: "" },
+							{ merchant: "阿瘦皮鞋", percent: 3.0, note: "" },
+							{ merchant: "棉花田生機園地", percent: 3.0, note: "" },
+							{ merchant: "宏匯廣場", percent: 3.0, note: "" },
+							{ merchant: "良興", percent: 3.0, note: "" },
+							{ merchant: "三井3C", percent: 3.0, note: "" },
+							{ merchant: "QUEEN SHOP", percent: 3.0, note: "" },
+							{ merchant: "比漾廣場", percent: 3.0, note: "" },
+							{ merchant: "秀泰生活", percent: 3.0, note: "" },
+							{ merchant: "義大世界購物廣場", percent: 3.0, note: "" },
+							{ merchant: "大魯閣", percent: 3.0, note: "" },
+							{ merchant: "勤美誠品綠園道", percent: 3.0, note: "" },
+							{ merchant: "PARK2草悟廣場", percent: 3.0, note: "" },
+							{ merchant: "金典綠園道商場", percent: 3.0, note: "" },
+							{ merchant: "麗嬰房", percent: 3.0, note: "" },
+							{ merchant: "DCC", percent: 3.0, note: "" },
+							{ merchant: "宜兒樂", percent: 3.0, note: "" },
+							{ merchant: "金東購物商場", percent: 3.0, note: "" },
+							{ merchant: "仁愛眼鏡", percent: 3.0, note: "" },
+							{ merchant: "老協珍", percent: 3.0, note: "" },
+							{ merchant: "HeyBonnie 芸格花藝", percent: 3.0, note: "" },
+							{ merchant: "高雄市政府文化局駁二藝術特區", percent: 3.0, note: "" },
+							{ merchant: "華山1914文創園區", percent: 3.0, note: "" },
+							{ merchant: "Himalaya中山店", percent: 3.0, note: "" },
+							{ merchant: "享平方廣場", percent: 3.0, note: "" },
+							{ merchant: "a la sha", percent: 3.0, note: "" },
+							{ merchant: "小林眼鏡", percent: 3.0, note: "" },
+							{ merchant: "傑昇通信", percent: 3.0, note: "" },
+							{ merchant: "LA NEW", percent: 3.0, note: "" },
+							{ merchant: "金玉堂文具批發廣場", percent: 3.0, note: "" },
+							{ merchant: "夏普震旦", percent: 3.0, note: "" },
+							{ merchant: "DK高博士", percent: 3.0, note: "" },
+							{ merchant: "Lagoon", percent: 3.0, note: "" },
+							{ merchant: "101文具天堂", percent: 3.0, note: "" },
+							{ merchant: "九乘九文具專家", percent: 3.0, note: "" },
+							{ merchant: "三槍宜而爽", percent: 3.0, note: "" },
+							{ merchant: "墊腳石", percent: 3.0, note: "" },
+							{ merchant: "小丁婦幼", percent: 3.0, note: "" },
+							{ merchant: "海邊走走", percent: 3.0, note: "" },
+							{ merchant: "芋樂大世界", percent: 3.0, note: "" },
+							{ merchant: "億家具批發倉庫", percent: 3.0, note: "" },
+							{ merchant: "溪和水產", percent: 3.0, note: "" },
+							{ merchant: "EASY SHOP台灣國民內衣店", percent: 3.0, note: "" },
+							{ merchant: "超頻電腦", percent: 3.0, note: "" }
+						]
+					},
+					{ 
+						name: "實體商店-生活服務", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "捷運自動售票機", percent: 3.0, note: "" },
+							{ merchant: "車站詢問處", percent: 3.0, note: "" },
+							{ merchant: "捷運車站花車販售處", percent: 3.0, note: "" },
+							{ merchant: "貓空纜車", percent: 3.0, note: "" },
+							{ merchant: "兒童新樂園", percent: 3.0, note: "" },
+							{ merchant: "臺北小巨蛋冰上樂園", percent: 3.0, note: "" },
+							{ merchant: "捷運北投會館", percent: 3.0, note: "" },
+							{ merchant: "旅天下", percent: 3.0, note: "" },
+							{ merchant: "ChargeSPOT", percent: 3.0, note: "" },
+							{ merchant: "raingo", percent: 3.0, note: "" },
+							{ merchant: "USPACE", percent: 3.0, note: "App授扣" },
+							{ merchant: "CITY PARKING 城市車旅", percent: 3.0, note: "" },
+							{ merchant: "台灣大車隊", percent: 3.0, note: "" },
+							{ merchant: "耐斯王子大飯店", percent: 3.0, note: "" },
+							{ merchant: "173叫計程車", percent: 3.0, note: "" },
+							{ merchant: "婦安貴賓計程車", percent: 3.0, note: "" },
+							{ merchant: "優良計程車", percent: 3.0, note: "" },
+							{ merchant: "AFTEE", percent: 3.0, note: "" },
+							{ merchant: "大都會車隊", percent: 3.0, note: "" },
+							{ merchant: "倫永大車隊", percent: 3.0, note: "" },
+							{ merchant: "皇冠大車隊", percent: 3.0, note: "" },
+							{ merchant: "嘟嘟房", percent: 3.0, note: "" },
+							{ merchant: "ViVi PARK", percent: 3.0, note: "" },
+							{ merchant: "台灣聯通", percent: 3.0, note: "" },
+							{ merchant: "aeroride 台灣快綫", percent: 3.0, note: "" },
+							{ merchant: "叫車吧", percent: 3.0, note: "" },
+							{ merchant: "松鼠集運", percent: 3.0, note: "" },
+							{ merchant: "停易適停車場", percent: 3.0, note: "" },
+							{ merchant: "俥亭停車場", percent: 3.0, note: "" },
+							{ merchant: "日月亭停車場", percent: 3.0, note: "" },
+							{ merchant: "宜舍停車場", percent: 3.0, note: "" },
+							{ merchant: "ｉ郵箱", percent: 3.0, note: "" },
+							{ merchant: "南仁湖", percent: 3.0, note: "" },
+							{ merchant: "OWLocker智慧型寄物櫃", percent: 3.0, note: "" },
+							{ merchant: "宜蘭傳藝", percent: 3.0, note: "" },
+							{ merchant: "台糖加油站", percent: 3.0, note: "" },
+							{ merchant: "SS生活販賣機", percent: 3.0, note: "" },
+							{ merchant: "摩馴生活販賣機", percent: 3.0, note: "" },
+							{ merchant: "義大遊樂世界", percent: 3.0, note: "" },
+							{ merchant: "喜樂時代影城", percent: 3.0, note: "" },
+							{ merchant: "臺北市立美術館", percent: 3.0, note: "" },
+							{ merchant: "宜蘭縣立蘭陽博物館", percent: 3.0, note: "" },
+							{ merchant: "袖珍博物館", percent: 3.0, note: "" },
+							{ merchant: "瀚寓夏天", percent: 3.0, note: "" },
+							{ merchant: "丁丁藥局", percent: 3.0, note: "" },
+							{ merchant: "翔順忘情遊", percent: 3.0, note: "" },
+							{ merchant: "花蓮理想大地渡假飯店", percent: 3.0, note: "" },
+							{ merchant: "大樹醫藥", percent: 3.0, note: "" },
+							{ merchant: "康宜庭", percent: 3.0, note: "" },
+							{ merchant: "錢櫃", percent: 3.0, note: "" },
+							{ merchant: "健身工廠", percent: 3.0, note: "" },
+							{ merchant: "旅電", percent: 3.0, note: "" },
+							{ merchant: "丁鴻志婦產科診所", percent: 3.0, note: "" },
+							{ merchant: "中山醫學大學附設醫院", percent: 3.0, note: "" },
+							{ merchant: "佛教慈濟醫療財團法人花蓮慈濟醫院", percent: 3.0, note: "" },
+							{ merchant: "愛在家平台", percent: 3.0, note: "" },
+							{ merchant: "檜意森活村", percent: 3.0, note: "" },
+							{ merchant: "蝴蝶谷溫泉渡假村", percent: 3.0, note: "" },
+							{ merchant: "花蓮遠雄海洋公園", percent: 3.0, note: "" },
+							{ merchant: "台北老爺大酒店", percent: 3.0, note: "" },
+							{ merchant: "台糖長榮酒店(台南)", percent: 3.0, note: "" },
+							{ merchant: "榮美金鬱金香酒店", percent: 3.0, note: "" },
+							{ merchant: "榮興金鬱金香酒店", percent: 3.0, note: "" },
+							{ merchant: "葉綠宿", percent: 3.0, note: "" },
+							{ merchant: "綠宿行旅", percent: 3.0, note: "" },
+							{ merchant: "葉綠宿 漫漫回嘉", percent: 3.0, note: "" },
+							{ merchant: "葉綠宿 川閱", percent: 3.0, note: "" },
+							{ merchant: "福爾摩沙草悟道酒店", percent: 3.0, note: "" },
+							{ merchant: "福爾摩沙ㄤ婿文旅", percent: 3.0, note: "" },
+							{ merchant: "台中港酒店", percent: 3.0, note: "" },
+							{ merchant: "台糖台北會館", percent: 3.0, note: "" },
+							{ merchant: "中科大飯店", percent: 3.0, note: "" },
+							{ merchant: "中科后豐會館", percent: 3.0, note: "" },
+							{ merchant: "芭蕾城市渡假旅店", percent: 3.0, note: "" },
+							{ merchant: "台糖池上牧野渡假村", percent: 3.0, note: "" },
+							{ merchant: "柳營尖山埤渡假村", percent: 3.0, note: "" },
+							{ merchant: "娜路彎大酒店", percent: 3.0, note: "" },
+							{ merchant: "佑全保健藥妝", percent: 3.0, note: "" },
+							{ merchant: "健康人生藥局", percent: 3.0, note: "" },
+							{ merchant: "台安藥局", percent: 3.0, note: "" },
+							{ merchant: "正光藥局", percent: 3.0, note: "" },
+							{ merchant: "淡江大學", percent: 3.0, note: "" },
+							{ merchant: "輔仁大學", percent: 3.0, note: "" },
+							{ merchant: "馬偕醫護管理專科學校", percent: 3.0, note: "" },
+							{ merchant: "168Parking", percent: 3.0, note: "" },
+							{ merchant: "歐特儀股份有限公司", percent: 3.0, note: "" },
+							{ merchant: "秀泰影城", percent: 3.0, note: "線上購票" }
+						]
+					},
+					{ 
+						name: "實體商店-餐飲", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "一之軒", percent: 3.0, note: "" },
+							{ merchant: "天仁茗茶", percent: 3.0, note: "" },
+							{ merchant: "這一鍋", percent: 3.0, note: "" },
+							{ merchant: "這一小鍋", percent: 3.0, note: "" },
+							{ merchant: "叁加叁", percent: 3.0, note: "" },
+							{ merchant: "瓦城", percent: 3.0, note: "" },
+							{ merchant: "1010湘", percent: 3.0, note: "" },
+							{ merchant: "非常泰", percent: 3.0, note: "" },
+							{ merchant: "YABI KITCHEN", percent: 3.0, note: "" },
+							{ merchant: "雲雀餐飲集團", percent: 3.0, note: "" },
+							{ merchant: "爭鮮迴轉", percent: 3.0, note: "" },
+							{ merchant: "爭鮮PLUS", percent: 3.0, note: "" },
+							{ merchant: "爭鮮gogo", percent: 3.0, note: "" },
+							{ merchant: "定食8", percent: 3.0, note: "" },
+							{ merchant: "MAGIC TOUCH", percent: 3.0, note: "" },
+							{ merchant: "頂呱呱", percent: 3.0, note: "" },
+							{ merchant: "東京油組", percent: 3.0, note: "" },
+							{ merchant: "屋馬燒肉", percent: 3.0, note: "" },
+							{ merchant: "新東陽", percent: 3.0, note: "" },
+							{ merchant: "涮屋馬", percent: 3.0, note: "" },
+							{ merchant: "金韓食", percent: 3.0, note: "" },
+							{ merchant: "ATT Valley 松仁店", percent: 3.0, note: "" },
+							{ merchant: "ATT 筷食尚 桃園店", percent: 3.0, note: "" },
+							{ merchant: "王品牛排", percent: 3.0, note: "" },
+							{ merchant: "享鴨", percent: 3.0, note: "" },
+							{ merchant: "莆田", percent: 3.0, note: "" },
+							{ merchant: "丰禾", percent: 3.0, note: "" },
+							{ merchant: "就饗", percent: 3.0, note: "" },
+							{ merchant: "原燒", percent: 3.0, note: "" },
+							{ merchant: "金咕", percent: 3.0, note: "" },
+							{ merchant: "聚", percent: 3.0, note: "" },
+							{ merchant: "藝奇", percent: 3.0, note: "" },
+							{ merchant: "夏慕尼", percent: 3.0, note: "" },
+							{ merchant: "西堤", percent: 3.0, note: "" },
+							{ merchant: "陶板屋", percent: 3.0, note: "" },
+							{ merchant: "品田牧場", percent: 3.0, note: "" },
+							{ merchant: "向辣", percent: 3.0, note: "" },
+							{ merchant: "青花驕", percent: 3.0, note: "" },
+							{ merchant: "和牛涮", percent: 3.0, note: "" },
+							{ merchant: "尬鍋", percent: 3.0, note: "" },
+							{ merchant: "肉次方", percent: 3.0, note: "" },
+							{ merchant: "阪前", percent: 3.0, note: "" },
+							{ merchant: "橘焱胡同集團", percent: 3.0, note: "" },
+							{ merchant: "漢堡王", percent: 3.0, note: "" },
+							{ merchant: "金色三麥", percent: 3.0, note: "" },
+							{ merchant: "三商巧福", percent: 3.0, note: "" },
+							{ merchant: "拿坡里", percent: 3.0, note: "" },
+							{ merchant: "三商炸雞", percent: 3.0, note: "" },
+							{ merchant: "三商鮮五丼", percent: 3.0, note: "" },
+							{ merchant: "品川蘭", percent: 3.0, note: "" },
+							{ merchant: "BANCO", percent: 3.0, note: "" },
+							{ merchant: "巧福PLUS", percent: 3.0, note: "" },
+							{ merchant: "謎思咖啡", percent: 3.0, note: "" },
+							{ merchant: "橡木桶洋酒", percent: 3.0, note: "" },
+							{ merchant: "中友百貨", percent: 3.0, note: "美食街" },
+							{ merchant: "樂天棒球場", percent: 3.0, note: "" },
+							{ merchant: "勝博殿", percent: 3.0, note: "" },
+							{ merchant: "一之鄉", percent: 3.0, note: "" },
+							{ merchant: "進發食品", percent: 3.0, note: "" },
+							{ merchant: "天香回味養生鍋", percent: 3.0, note: "" },
+							{ merchant: "秀咖啡", percent: 3.0, note: "" },
+							{ merchant: "1982 de glacée冰淇淋", percent: 3.0, note: "" },
+							{ merchant: "櫻桃計畫", percent: 3.0, note: "" },
+							{ merchant: "森高砂咖啡館", percent: 3.0, note: "" },
+							{ merchant: "煙波花時間", percent: 3.0, note: "" },
+							{ merchant: "REN BISTRONOMY", percent: 3.0, note: "" },
+							{ merchant: "清心福全", percent: 3.0, note: "" },
+							{ merchant: "麥味登", percent: 3.0, note: "" },
+							{ merchant: "八方雲集", percent: 3.0, note: "" },
+							{ merchant: "85度C", percent: 3.0, note: "" },
+							{ merchant: "CoCo都可", percent: 3.0, note: "" },
+							{ merchant: "可不可熟成紅茶", percent: 3.0, note: "" },
+							{ merchant: "迷客夏", percent: 3.0, note: "" },
+							{ merchant: "鮮茶道", percent: 3.0, note: "" },
+							{ merchant: "麻古茶坊", percent: 3.0, note: "" },
+							{ merchant: "梁社漢排骨", percent: 3.0, note: "" },
+							{ merchant: "COMEBUY", percent: 3.0, note: "" },
+							{ merchant: "路易莎咖啡", percent: 3.0, note: "" },
+							{ merchant: "TEA TOP台灣第一味", percent: 3.0, note: "" },
+							{ merchant: "cama café", percent: 3.0, note: "" },
+							{ merchant: "烏弄原茶", percent: 3.0, note: "" },
+							{ merchant: "龜記", percent: 3.0, note: "" },
+							{ merchant: "潮味決", percent: 3.0, note: "" },
+							{ merchant: "萬波島嶼紅茶", percent: 3.0, note: "" },
+							{ merchant: "珍煮丹", percent: 3.0, note: "" },
+							{ merchant: "喫茶小舖", percent: 3.0, note: "" },
+							{ merchant: "老先覺", percent: 3.0, note: "" },
+							{ merchant: "水巷茶弄", percent: 3.0, note: "" },
+							{ merchant: "康青龍", percent: 3.0, note: "" },
+							{ merchant: "春陽茶事", percent: 3.0, note: "" },
+							{ merchant: "玉津咖啡", percent: 3.0, note: "" },
+							{ merchant: "強尼兄弟健康廚房", percent: 3.0, note: "" },
+							{ merchant: "南海茶道", percent: 3.0, note: "" },
+							{ merchant: "高北牛乳大王", percent: 3.0, note: "" },
+							{ merchant: "台茶1号", percent: 3.0, note: "" },
+							{ merchant: "MAYI滿溢", percent: 3.0, note: "" },
+							{ merchant: "七盞茶", percent: 3.0, note: "" },
+							{ merchant: "吃茶三千", percent: 3.0, note: "" },
+							{ merchant: "瑪俐亞麵包蛋糕坊", percent: 3.0, note: "" },
+							{ merchant: "啵棒珍珠果茶專賣所", percent: 3.0, note: "" },
+							{ merchant: "STAND cafébar", percent: 3.0, note: "" },
+							{ merchant: "五鮮級鍋物專賣", percent: 3.0, note: "" },
+							{ merchant: "達美樂披薩", percent: 3.0, note: "" },
+							{ merchant: "TrueWin初韻", percent: 3.0, note: "" },
+							{ merchant: "大賞平價鉄板燒", percent: 3.0, note: "" },
+							{ merchant: "12MINI", percent: 3.0, note: "部分品牌適用" },
+							{ merchant: "一品活蝦", percent: 3.0, note: "" },
+							{ merchant: "漁人町星光市集", percent: 3.0, note: "" }
+						]
+					},
+					{ 
+						name: "實體商店-公益", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "財團法人忠義社會福利事業基金會", percent: 3.0, note: "" },
+							{ merchant: "社團法人中華兒童暨家庭守護者協會", percent: 3.0, note: "" },
+							{ merchant: "社團法人臺灣雷特氏症病友關懷協會", percent: 3.0, note: "" },
+							{ merchant: "新北市康復之友協會", percent: 3.0, note: "" }
+						]
+					},
+					{ 
+						name: "實體商店-寵物", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "東森寵物", percent: 3.0, note: "" },
+							{ merchant: "寵物公園", percent: 3.0, note: "" },
+							{ merchant: "貓狗大棧", percent: 3.0, note: "" }
+						]
+					},	
+					{ 
+						name: "網路商店", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "Foodpanda", percent: 3.0, note: "" },
+							{ merchant: "IKEA線上購物", percent: 3.0, note: "" },
+							{ merchant: "EZTABLE", percent: 3.0, note: "" },
+							{ merchant: "小三美日", percent: 3.0, note: "" },
+							{ merchant: "KFC肯德基", percent: 3.0, note: "線上" },
+							{ merchant: "PizzaHut必勝客", percent: 3.0, note: "線上" },
+							{ merchant: "KKBOX", percent: 3.0, note: "" },
+							{ merchant: "KKday", percent: 3.0, note: "" }
+						] 
+					}
+				]
+			},
+			{ 
+				name: "台新Pay",
+				cardNote: "通路：https://reurl.cc/9nkV3X",
+				groups: [
+					{ 
+						name: "指定通路", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "全家便利商店", percent: 3.0, note: "" },
+							{ merchant: "7-11", percent: 3.0, note: "" },
+							{ merchant: "OK Mart", percent: 3.0, note: "" },
+							{ merchant: "Hi-Life萊爾富", percent: 3.0, note: "" },
+							{ merchant: "楓康超市", percent: 3.0, note: "" },
+							{ merchant: "九乘九文具專家", percent: 3.0, note: "" },
+							{ merchant: "IKEA", percent: 3.0, note: "" },
+							{ merchant: "光南大批發", percent: 3.0, note: "" },
+							{ merchant: "撥筋堂", percent: 3.0, note: "" },
+							{ merchant: "LIANAN", percent: 3.0, note: "" },
+							{ merchant: "佑全保健藥妝", percent: 3.0, note: "" },
+							{ merchant: "健康人生藥局", percent: 3.0, note: "" },
+							{ merchant: "新光三越", percent: 3.0, note: "" },
+							{ merchant: "Richart Mart", percent: 3.0, note: "" },
+							{ merchant: "康是美", percent: 3.0, note: "" },
+							{ merchant: "曼摩頓Momentum", percent: 3.0, note: "" },
+							{ merchant: "NET", percent: 3.0, note: "" },
+							{ merchant: "55688(台灣大車隊)", percent: 3.0, note: "" },
+							{ merchant: "新北捷運", percent: 3.0, note: "" },
+							{ merchant: "路易沙咖啡Lousia coffee", percent: 3.0, note: "" },
+							{ merchant: "漢堡王Burger King", percent: 3.0, note: "" },
+							{ merchant: "屋馬", percent: 3.0, note: "" },
+							{ merchant: "金韓食", percent: 3.0, note: "" },
+							{ merchant: "涮屋馬", percent: 3.0, note: "" }
+						] 
+					}
+				]
+			},
+			{ 
+				name: "台灣Pay (TWQR)",
+				cardNote: "地圖通路：https://reurl.cc/WOmDbZ",
+				groups: [
+					{ 
+						name: "指定通路", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "85度C", percent: 3.0, note: "" },
+							{ merchant: "築間幸福鍋物", percent: 3.0, note: "" },
+							{ merchant: "美廉社", percent: 3.0, note: "" },
+							{ merchant: "可不可熟成紅茶", percent: 3.0, note: "" },
+							{ merchant: "鞋全家福", percent: 3.0, note: "" },
+							{ merchant: "三商巧福", percent: 3.0, note: "" },
+							{ merchant: "拿坡里", percent: 3.0, note: "" },
+							{ merchant: "太平洋百貨公司", percent: 3.0, note: "" },
+							{ merchant: "福勝亭", percent: 3.0, note: "" },
+							{ merchant: "杏一醫療用品", percent: 3.0, note: "" },
+							{ merchant: "GLOBALLMALL", percent: 3.0, note: "" },
+							{ merchant: "萬波導與紅茶", percent: 3.0, note: "" },
+							{ merchant: "漢神巨蛋購物廣場", percent: 3.0, note: "" },
+							{ merchant: "東森購物", percent: 3.0, note: "" },
+							{ merchant: "STAUDIO A", percent: 3.0, note: "" },
+							{ merchant: "三商炸雞", percent: 3.0, note: "" },
+							{ merchant: "吉野家", percent: 3.0, note: "" },
+							{ merchant: "神腦國際", percent: 3.0, note: "" },
+							{ merchant: "福容大飯店", percent: 3.0, note: "" },
+							{ merchant: "棉花田生機園地", percent: 3.0, note: "" },
+							{ merchant: "TOMOD’S", percent: 3.0, note: "" },
+							{ merchant: "三商鮮五丼", percent: 3.0, note: "" },
+							{ merchant: "花鳥川水果千層蛋糕", percent: 3.0, note: "" },
+							{ merchant: "聖德科斯", percent: 3.0, note: "" },
+							{ merchant: "有之和牛", percent: 3.0, note: "" },
+							{ merchant: "老虎城購物中心", percent: 3.0, note: "" },
+							{ merchant: "BANCO", percent: 3.0, note: "" },
+							{ merchant: "STRAIGHT A", percent: 3.0, note: "" },
+							{ merchant: "麗寶樂園度假區", percent: 3.0, note: "" },
+							{ merchant: "品川蘭", percent: 3.0, note: "" },
+							{ merchant: "G2000", percent: 3.0, note: "" },
+							{ merchant: "尚亨運動用品", percent: 3.0, note: "" },
+							{ merchant: "麗嬰房股份有限公司", percent: 3.0, note: "" },
+							{ merchant: "HILL TOP山頂鳥", percent: 3.0, note: "" },
+							{ merchant: "悠跑", percent: 3.0, note: "" },
+							{ merchant: "樂跑", percent: 3.0, note: "" }
+						] 
+					}
+				]
+			},
+			{
+				name: "friDay聯名卡",
+				cardNote: "~12/31 https://reurl.cc/89aq3y\n單筆計算 四捨五入 結帳日次七日內回饋\n須設定台新帳戶扣繳台新信用卡帳款",
+				groups: [
+					{ 
+						name: "一般消費", 
+						groupNote: "", 
+						rewards: [{ merchant: "一般消費", percent: 1.0, note: "" }] 
+					},
+					{ 
+						name: "遠傳電信帳單代扣繳", 
+						groupNote: "含代收；帳單上限300", 
+						rewards: [{ merchant: "遠傳電信帳單代扣繳", percent: 3.0, note: "" }] 
+					},
+					{ 
+						name: "指定通路", 
+						groupNote: "帳單上限1000", 
+						rewards: [
+							{ merchant: "遠傳全台門市", percent: 8.0, note: "限週二、五" },
+							{ merchant: "friDay線上購物", percent: 8.0, note: "限週二、五" },
+							{ merchant: "friDay 影音", percent: 8.0, note: "限週二、五" },
+							{ merchant: "遠傳官網", percent: 8.0, note: "含網路門市與電話行銷；限週二、五" },
+							{ merchant: "遠傳心生活APP", percent: 8.0, note: "限週二、五" },
+							{ merchant: "遠傳語音系統", percent: 8.0, note: "限週二、五" },
+							{ merchant: "遠大售票", percent: 8.0, note: "限週二、五" },
+							{ merchant: "肯德基", percent: 8.0, note: "限週二、五" },
+							{ merchant: "必勝客", percent: 8.0, note: "限週二、五" },
+							{ merchant: "EZTABLE", percent: 8.0, note: "限週二、五" },
+							{ merchant: "Trip.com", percent: 8.0, note: "限週二、五" },
+							{ merchant: "Klook", percent: 8.0, note: "限週二、五" },
+							{ merchant: "Agoda", percent: 8.0, note: "限週二、五" }
+						] 
+					}
+				]
+			},
+			{
+				name: "蝦皮購物聯名卡",
+				cardNote: "~12/31\n蝦皮頁面：https://reurl.cc/z5aA0p\n國泰頁面：https://reurl.cc/EQ0Gkn\nhttps://reurl.cc/EQ0o7v\n單筆計算 四捨五入 結帳日次七日內回饋\n須設定台新帳戶扣繳台新信用卡帳款",
+				groups: [
+					{ 
+						name: "當月累積消費(國泰)", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "3000以上", percent: 2.0, note: "" },
+							{ merchant: "2999以下", percent: 1.0, note: "" }
+						] 
+					},
+					{ 
+						name: "消費通路(蝦皮)", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "商城", percent: 2.0, note: "" },
+							{ merchant: "非商城", percent: 1.0, note: "" }
+						] 
+					},
+					{ 
+						name: "加碼", 
+						groupNote: "", 
+						rewards: [
+							{ merchant: "超級品牌日", percent: 6.0, note: "每季登錄；每月上限1000；次月月底前回饋；品牌店：https://reurl.cc/lYWvGv" },
+							{ merchant: "促刷檔期", percent: 6.0, note: "每次登錄；10.10/11.11/12.12；每期上限2000；結帳日次五工作日內回饋" }
+						] 
+					},
+					{ 
+						name: "一般消費", 
+						groupNote: "", 
+						rewards: [{ merchant: "一般消費", percent: 0.5, note: "" }] 
+					},
+					{ 
+						name: "指定通路", 
+						groupNote: "2025/9/1~2025/12/31；於2025/12/22 16:00至2025/12/24 23:59開放登錄，加碼回饋4.5%，限量10,000名；每期上限2000", 
+						rewards: [
+						{ merchant: "Uber Eats", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "Foodpanda", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "長榮航空", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "中華航空", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "星宇航空", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "台灣虎航", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "亞洲航空", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "國泰航空", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "東南旅遊", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "ezTravel易遊網", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "可樂旅遊", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "雄獅旅遊", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "KKday", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "Klook", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "昇恆昌", percent: 0.5, note: "12/22登錄加碼4.5%" },
+						{ merchant: "采盟", percent: 0.5, note: "12/22登錄加碼4.5%" }
+						] 
+					}
+				]
+			}
+        ];
+        const DEFAULT_MERCHANTS = ["7-11", "foodpanda", "全聯", "蝦皮", "麥當勞"];
+// 由於移除了管理功能，直接從常數載入資料
+let cards = DEFAULT_CARDS; 
+let commonMerchants = DEFAULT_MERCHANTS;
 
 // --- 渲染與初始化 ---
 
@@ -87,13 +874,8 @@ function renderCardButtons() {
         button.className = "card-button";
         button.textContent = card.name;
         button.onclick = () => quickSearch(card.name, true);
-        button.setAttribute('draggable', true);
-        button.addEventListener('dragstart', handleDragStart);
-        button.addEventListener('dragend', handleDragEnd);
         container.appendChild(button);
     });
-    container.addEventListener('dragover', handleDragOver);
-    container.addEventListener('drop', handleDrop);
 }
 
 function renderMerchantButtons() {
@@ -104,16 +886,12 @@ function renderMerchantButtons() {
         button.className = "merchant-button";
         button.textContent = merchant;
         button.onclick = () => quickSearch(merchant);
-        button.setAttribute('draggable', true);
-        button.addEventListener('dragstart', handleDragStart);
-        button.addEventListener('dragend', handleDragEnd);
         container.appendChild(button);
     });
-    container.addEventListener('dragover', handleDragOver);
-    container.addEventListener('drop', handleDrop);
 }
 
 function init() {
+    // 由於沒有 localStorage 或管理功能，直接渲染即可
     renderCardButtons();
     renderMerchantButtons();
     setMainContentPadding();
@@ -136,8 +914,7 @@ function setMainContentPadding() {
 window.addEventListener('resize', setMainContentPadding);
 window.addEventListener('load', setMainContentPadding);
 
-// --- 核心功能函式 ---
-
+// --- 核心功能函式 (查詢邏輯) ---
 function searchMerchant(keywordOverride = null, isCardQuery = false) {
     const keyword = keywordOverride || document.getElementById("search").value.trim();
     const resultDiv = document.getElementById("searchResult");
@@ -159,14 +936,12 @@ function searchMerchant(keywordOverride = null, isCardQuery = false) {
 
     const lowerKeyword = keyword.toLowerCase();
     let merchantMatches = []; 
-    // Map<CardName, Set<MatchTypeString>>
     let noteOnlyCardsMap = new Map(); 
     let merchantMatchedCardNames = new Set(); 
     
     cards.forEach(card => {
         const cardNoteMatch = card.cardNote.toLowerCase().includes(lowerKeyword);
         
-        // 1. 檢查卡片層級註解匹配
         if (cardNoteMatch) {
             if (!noteOnlyCardsMap.has(card.name)) {
                 noteOnlyCardsMap.set(card.name, new Set());
@@ -177,7 +952,6 @@ function searchMerchant(keywordOverride = null, isCardQuery = false) {
         card.groups.forEach(group => {
             const groupNoteMatch = group.groupNote.toLowerCase().includes(lowerKeyword);
             
-            // 2. 檢查權益組層級註解匹配
             if (groupNoteMatch) {
                 if (!noteOnlyCardsMap.has(card.name)) {
                     noteOnlyCardsMap.set(card.name, new Set());
@@ -189,7 +963,6 @@ function searchMerchant(keywordOverride = null, isCardQuery = false) {
                 const merchantMatch = r.merchant.toLowerCase().includes(lowerKeyword);
                 const rewardNoteMatch = r.note.toLowerCase().includes(lowerKeyword);
                 
-                // 3. 檢查通路名稱匹配 (優先級最高，使用詳細結果)
                 if (merchantMatch) {
                     merchantMatches.push({
                         card: card.name, 
@@ -200,7 +973,6 @@ function searchMerchant(keywordOverride = null, isCardQuery = false) {
                     });
                     merchantMatchedCardNames.add(card.name);
                 } 
-                // 4. 檢查回饋項目註解匹配，但必須確保不是通路名稱匹配 (純註解)
                 else if (rewardNoteMatch) {
                     if (!noteOnlyCardsMap.has(card.name)) {
                         noteOnlyCardsMap.set(card.name, new Set());
@@ -211,13 +983,10 @@ function searchMerchant(keywordOverride = null, isCardQuery = false) {
         });
     });
 
-    // 排除重複：如果卡片已出現在詳細的通路匹配結果中，則從純註解列表中移除
     merchantMatchedCardNames.forEach(cardName => noteOnlyCardsMap.delete(cardName));
     
-    // 轉換 Map 為 Array 並排序
     const finalNoteCards = Array.from(noteOnlyCardsMap).sort((a, b) => a[0].localeCompare(b[0]));
     
-    // --- 顯示結果邏輯 ---
     resultDiv.innerHTML = "";
     
     if (merchantMatches.length === 0 && finalNoteCards.length === 0) {
@@ -225,7 +994,6 @@ function searchMerchant(keywordOverride = null, isCardQuery = false) {
         return;
     }
     
-    // A. 顯示簡化的卡片清單 (純註解匹配)
     if (finalNoteCards.length > 0) {
         const noteHeader = document.createElement("h3");
         noteHeader.textContent = `[註解匹配] 相關卡片 (${finalNoteCards.length} 張): 搜尋關鍵字: "${keyword}"`;
@@ -252,24 +1020,20 @@ function searchMerchant(keywordOverride = null, isCardQuery = false) {
         resultDiv.appendChild(noteListDiv);
     }
     
-    // B. 顯示詳細的通路回饋清單 (通路名稱匹配)
     if (merchantMatches.length > 0) {
         const merchantHeader = document.createElement("h3");
         merchantHeader.textContent = `[通路匹配] 詳細回饋結果 (${merchantMatches.length} 筆): 搜尋關鍵字: "${keyword}"`;
         merchantHeader.style.color = '#333';
         resultDiv.appendChild(merchantHeader);
 
-        // 依回饋比例排序
         merchantMatches.sort((a, b) => b.percent - a.percent); 
         
         merchantMatches.forEach(r => {
             
             const highlightKeyword = (text) => text.replace(new RegExp(keyword, 'gi'), match => `<span class="highlight">${match}</span>`);
 
-            // 通路名稱高亮
             r.merchant = highlightKeyword(r.merchant);
             
-            // 回饋註解高亮 (如果註解也包含關鍵字，雖然是以通路匹配為主，但仍可高亮顯示)
             let noteText = r.note ? ` (<span style="color: blue; font-weight: normal;">${highlightKeyword(r.note)}</span>)` : ''; 
 
             const div = document.createElement("div");
@@ -323,162 +1087,6 @@ function displayCardDetail(card) {
 function quickSearch(name, isCardQuery = false) {
     document.getElementById("search").value = name;
     searchMerchant(name, isCardQuery);
-}
-
-function showMerchantManagerModal() {
-    const container = document.getElementById("modalMerchantContainer");
-    container.innerHTML = '';
-    commonMerchants.forEach((merchant) => {
-        const div = document.createElement("div");
-        div.className = "merchant-item";
-        // 注意：這裡的 style 應改寫入 CSS，但保留原版邏輯
-        div.innerHTML = `<input type="text" value="${merchant}" class="modal-merchant-name" style="width: 80%; padding: 8px 12px; margin: 5px 0;"><button onclick="this.parentNode.remove()">移除</button>`;
-        container.appendChild(div);
-    });
-    document.getElementById("merchantModal").style.display = "block";
-}
-
-function addCommonMerchant() {
-    const input = document.getElementById("newMerchantInput");
-    const newMerchant = input.value.trim();
-    if (!newMerchant) return;
-    const container = document.getElementById("modalMerchantContainer");
-    const div = document.createElement("div");
-    div.className = "merchant-item";
-    div.innerHTML = `<input type="text" value="${newMerchant}" class="modal-merchant-name" style="width: 80%; padding: 8px 12px; margin: 5px 0;"><button onclick="this.parentNode.remove()">移除</button>`;
-    container.appendChild(div);
-    input.value = '';
-}
-
-function saveCommonMerchants() {
-    const updatedMerchants = [];
-    document.querySelectorAll("#modalMerchantContainer .modal-merchant-name").forEach(input => {
-        const merchant = input.value.trim();
-        if (merchant && !updatedMerchants.includes(merchant)) {
-            updatedMerchants.push(merchant);
-        }
-    });
-    commonMerchants = updatedMerchants;
-    renderMerchantButtons();
-    closeModal('merchantModal');
-}
-
-function showCardManagerModal() {
-    const listContainer = document.getElementById("cardEditList");
-    listContainer.innerHTML = '';
-    cards.forEach((card, index) => {
-        const div = document.createElement("div");
-        div.className = "card-edit-list-item";
-        div.innerHTML = `
-            <span>${card.name}</span>
-            <div>
-                <button class="edit-btn" onclick="showEditModal(${index})">編輯</button>
-                <button class="delete-btn" onclick="deleteCard(${index})">刪除</button>
-            </div>
-        `;
-        listContainer.appendChild(div);
-    });
-    document.getElementById("cardManagerModal").style.display = "block";
-}
-
-function showEditModal(cardIndex) {
-    editingCardIndex = cardIndex;
-    document.getElementById("cardManagerModal").style.display = "none"; 
-    const container = document.getElementById("modalRewardsGroupContainer");
-    container.innerHTML = '';
-    let cardData = { name: '', cardNote: '', groups: [] };
-    if (cardIndex === -1) {
-        document.getElementById("modalTitle").textContent = "新增卡片";
-        addModalRewardGroup(); 
-    } else {
-        cardData = JSON.parse(JSON.stringify(cards[cardIndex]));
-        document.getElementById("modalTitle").textContent = `編輯卡片: ${cardData.name}`;
-        cardData.groups.forEach((group, groupIndex) => { addModalRewardGroup(group.name, group.groupNote, group.rewards, groupIndex); });
-        if (cardData.groups.length === 0) { addModalRewardGroup(); }
-    }
-    document.getElementById("modalCardName").value = cardData.name;
-    document.getElementById("modalCardNote").value = cardData.cardNote;
-    document.getElementById("cardModal").style.display = "block";
-}
-
-function addModalRewardGroup(groupName = '', groupNote = '', rewards = [], groupIndex = -1) {
-    const container = document.getElementById("modalRewardsGroupContainer");
-    const groupDiv = document.createElement("div");
-    groupDiv.className = "reward-group-item";
-    const header = document.createElement('div');
-    header.style.display = 'flex';
-    header.style.justifyContent = 'space-between';
-    // 注意：這裡的 style 應改寫入 CSS，但保留原版邏輯
-    header.innerHTML = `<input type="text" value="${groupName}" placeholder="權益組名稱 (ex: 好好刷)" class="modal-group-name" style="width: 45%;"><input type="text" value="${groupNote}" placeholder="權益組註解 (ex: 需登錄)" class="modal-group-note" style="width: 45%;"><button style="background: #e66; margin: 0;" onclick="this.parentNode.parentNode.remove()">移除權益組</button>`;
-    groupDiv.appendChild(header);
-    const rewardsContainer = document.createElement('div');
-    rewardsContainer.className = 'rewards-sub-container';
-    rewardsContainer.style.marginTop = '10px';
-    groupDiv.appendChild(rewardsContainer);
-    const addRewardBtn = document.createElement('button');
-    addRewardBtn.textContent = '新增回饋項目';
-    addRewardBtn.style.backgroundColor = '#607d8b'; // 注意：這裡的 style 應改寫入 CSS，但保留原版邏輯
-    addRewardBtn.onclick = () => addModalReward(rewardsContainer);
-    groupDiv.appendChild(addRewardBtn);
-    if (rewards.length > 0) {
-        rewards.forEach(r => addModalReward(rewardsContainer, r.merchant, r.percent, r.note));
-    } else { addModalReward(rewardsContainer); }
-    container.appendChild(groupDiv);
-}
-
-function addModalReward(container, merchant = '', percent = '', note = '') {
-    const div = document.createElement("div");
-    div.className = "reward-item";
-    // 注意：這裡的 style 應改寫入 CSS，但保留原版邏輯
-    div.innerHTML = `<input type="text" value="${merchant}" placeholder="通路名稱" class="modal-merchant" style="width: 25%;"><input type="number" value="${percent}" placeholder="回饋 %" step="0.1" class="modal-percent" style="width: 15%;"><input type="text" value="${note}" placeholder="附註 (ex: 限量)" class="modal-note" style="width: 40%;"><button onclick="this.parentNode.remove()">移除</button>`;
-    container.appendChild(div);
-}
-
-function saveCard() {
-    const cardName = document.getElementById("modalCardName").value.trim();
-    const cardNote = document.getElementById("modalCardNote").value.trim();
-    if (!cardName) { alert("卡片名稱不能為空"); return; }
-    const groups = [];
-    const groupItems = document.querySelectorAll("#modalRewardsGroupContainer .reward-group-item");
-    let isValid = true;
-    groupItems.forEach(groupItem => {
-        const groupName = groupItem.querySelector(".modal-group-name").value.trim();
-        const groupNote = groupItem.querySelector(".modal-group-note").value.trim();
-        const rewards = [];
-        if (!groupName) { alert("請為所有權益組命名。"); isValid = false; return; }
-        const rewardItems = groupItem.querySelectorAll(".reward-item");
-        rewardItems.forEach(item => {
-            const merchant = item.querySelector(".modal-merchant").value.trim();
-            const percent = parseFloat(item.querySelector(".modal-percent").value);
-            const note = item.querySelector(".modal-note").value.trim();
-            if (merchant && !isNaN(percent)) {
-                rewards.push({ merchant, percent, note });
-            } else if (merchant || !isNaN(percent)) {
-                alert(`權益組 [${groupName}] 中有未填寫完整的項目。請移除或填寫完整。`);
-                isValid = false;
-            }
-        });
-        if (rewards.length > 0) { groups.push({ name: groupName, groupNote: groupNote, rewards: rewards }); }
-    });
-    if (!isValid) return;
-    let newCardData = { name: cardName, cardNote: cardNote, groups: groups };
-    if (editingCardIndex === -1) { cards.push(newCardData); } 
-    else { cards[editingCardIndex] = newCardData; }
-    closeModal('cardModal');
-    renderCardButtons(); 
-}
-
-function deleteCard(cardIndex) {
-     if (confirm(`確定要刪除卡片 ${cards[cardIndex].name} 及其所有回饋嗎?`)) {
-        cards.splice(cardIndex, 1);
-        showCardManagerModal(); 
-        renderCardButtons();
-     }
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = "none";
-    if (modalId === 'cardModal') { showCardManagerModal(); }
 }
 
 // 初始化執行
