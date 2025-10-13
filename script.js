@@ -1047,7 +1047,7 @@ const DEFAULT_PAYMENTS = [
 
 const DEFAULT_MERCHANTS = [
     "7-11", "foodpanda", "全聯", "家樂福", "Uber Eats",
-    "全家", "KFC"
+    "蝦皮", "全家", "KFC"
 ];
 
 let cards = DEFAULT_CARDS; 
