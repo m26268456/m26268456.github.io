@@ -463,41 +463,4 @@ button {
   .external-link-btn {
     flex: 0 0 auto;
   }
-
-  /* 查詢結果區域：防止文字擠在一起，排版亂掉 */
-  .merchant-group-result > div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 5px;
-    padding: 8px 0;
-    border-top: 1px dashed #b3d9ff;
-    line-height: 1.4;
-  }
-
-  .search-result-percent {
-    flex: 0 0 auto;
-    min-width: 50px;
-    font-weight: bold;
-    color: green;
-  }
-
-  .merchant-group-result > div a {
-    flex: 0 0 auto;
-    word-break: break-word;
-    max-width: 120px;
-    overflow-wrap: break-word;
-  }
-
-  .search-result-note {
-    white-space: normal;
-    word-break: break-word;
-    flex: 1 1 auto;
-  }
-
-  .merchant-group-result > div span,
-  .merchant-group-result > div strong {
-    word-break: break-word;
-    overflow-wrap: break-word;
-  }
 }
