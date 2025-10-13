@@ -449,12 +449,55 @@ button {
 
 
 /* --- 手機響應式調整 --- */
-@media (max-width: 900px) {
-    #header-left h1 { font-size: 1.5em; padding-left: 10px; }
-    #fixed-header-content { padding: 10px 20px 10px 20px; }
-    #top-navigation { grid-template-columns: 1fr; }
-    .search-container input { padding-right: 12px; }
-    #external-links {
-        display: none; 
-    }
+@media (max-width: 768px) {
+  /* 外部連結按鈕在手機上顯示並可換行或橫滑 */
+  #external-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: center;
+  }
+
+  .external-link-btn {
+    flex: 0 0 auto;
+  }
+
+  /* 查詢結果區域：防止文字擠在一起，排版亂掉 */
+  .merchant-group-result > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 5px;
+    padding: 8px 0;
+    border-top: 1px dashed #b3d9ff;
+    line-height: 1.4;
+  }
+
+  .search-result-percent {
+    flex: 0 0 auto;
+    min-width: 50px;
+    font-weight: bold;
+    color: green;
+  }
+
+  .merchant-group-result > div a {
+    flex: 0 0 auto;
+    word-break: break-word;
+    max-width: 120px;
+    overflow-wrap: break-word;
+  }
+
+  .search-result-note {
+    white-space: normal;
+    word-break: break-word;
+    flex: 1 1 auto;
+  }
+
+  .merchant-group-result > div span,
+  .merchant-group-result > div strong {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
 }
