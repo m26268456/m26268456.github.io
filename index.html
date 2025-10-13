@@ -2,124 +2,65 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>Card Rewards</title>
-	<link rel="icon" href="icon.png">
+    <title>Credit card Back List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 </head>
 <body>
     
-    <header id="fixed-header">
+    <div id="fixed-header">
         <div id="fixed-header-content">
-            <div id="header-bar">
-                <button id="menu-toggle" onclick="toggleMenu()">☰</button>
-                <div id="header-left">
-                    <h1 onclick="navigateToView('query')" style="cursor: pointer;">信用卡回饋查詢</h1>
-                </div>
-                <div id="external-links">
-                    <a href="https://forms.gle/iXQJJsxacx1TreB2A" target="_blank" class="external-link-btn">記帳表單</a>
-                    <a href="https://www.youtube.com/" target="_blank" class="external-link-btn">YouTube</a>
-                </div>
+            <div id="header-title-container"> 
+                <h1>信用卡回饋查詢</h1>
+                <button id="menu-toggle-btn" onclick="toggleCardMenu()">≡ 卡片選單</button>
             </div>
             
-            <div id="top-navigation-container" style="display: block;">
-                <div id="top-navigation">
-                    <div class="nav-section" id="search-input-section">
-                        <div class="header-group">
-                            <h2>新增通路</h2>
-                            <button id="reset-merchants-btn" onclick="resetAllSelectedMerchants()">一鍵重置</button>
-                        </div>
-                        <div class="search-container">
-                            <input type="text" id="manualMerchantInput" placeholder="輸入通路名稱,例如：IKEA或家樂福" onkeypress="if(event.keyCode===13) { addManualMerchant(); }">
-                            <button onclick="addManualMerchant()">新增</button>
-                        </div>
-                        
-                        <div style="margin-top: 10px;">
-                            <strong style="font-size: 0.9em;">新增通路內容:</strong>
-                            <div id="selectedMerchantTags" style="display: flex; flex-wrap: wrap; gap: 8px 5px; border: 1px solid #eee; padding: 5px; border-radius: 4px; min-height: 30px; background-color: #f9f9f9;">
-                                </div>
-                        </div>
+            <div id="top-navigation">
+                
+                <div class="nav-section">
+                    <div class="header-group"><h2>快速查詢</h2></div>
+                    <div class="search-container">
+                        <input type="text" id="search" placeholder="輸入通路名稱或註解關鍵字, 例如：IKEA 或 需登錄">
+                        <button onclick="searchMerchant()">查詢</button>
                     </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="header-group">
+                        <h2>常用通路</h2>
+                    </div>
+                    <div id="commonMerchants" class="button-scroll-container"></div>
+                </div>
 
-                    <div class="nav-section" id="common-merchants-section">
-                        <div class="header-group">
-                            <h2>常用通路</h2>
-                            </div>
-                        <div class="button-scroll-container" id="commonMerchants">
-                            </div>
+                <div class="nav-section" id="all-cards-nav-section">
+                    <div class="header-group">
+                        <h2>所有信用卡</h2>
                     </div>
+                    <div id="allCardsButtons" class="button-scroll-container"></div>
                 </div>
             </div>
-            
         </div>
-    </header>
+    </div>
     
-    <div id="menu-overlay" onclick="toggleMenu()"></div>
-    <nav id="side-menu">
-        <h3 style="margin: 0 0 20px 20px; color: #fff;">功能選單</h3>
-        <a href="javascript:void(0)" onclick="navigateToView('query')">回饋查詢</a>
-        <a href="javascript:void(0)" onclick="navigateToView('calculator')">計算機</a>
-        
-        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleSubMenu('cardSubMenu')">
-            信用卡總覽 ▼
-        </a>
-        <div id="cardSubMenu" class="sub-menu">
-            </div>
-
-        <a href="javascript:void(0)" class="dropdown-toggle" onclick="toggleSubMenu('paymentSubMenu')">
-            支付方式總覽 ▼
-        </a>
-        <div id="paymentSubMenu" class="sub-menu">
-            </div>
-    </nav>
-
-
-    <main id="main-content">
-        <div id="app-container">
-            
-            <div id="queryView" class="main-view" style="display: block;">
-                <div id="searchResultSection">
-                    <h2 id="currentFeatureTitle">查詢結果</h2>
-                    <div id="searchResult">
-                        <p>請點擊上方的常用通路按鈕或手動新增通路開始查詢。</p>
-                    </div>
+    <div id="app-container">
+        <div id="main-content">
+            <div id="searchResultSection">
+                <h2>搜尋結果</h2>
+                <div id="searchResult">
+                    <p>請輸入通路名稱，或點選上方的卡片/常用通路按鈕進行查詢。</p>
                 </div>
             </div>
-            
-            <div id="calculatorView" class="main-view" style="display: none;">
-                <div class="content-wrapper">
-                    <div class="card-detail-view" style="max-width: 600px; margin: 20px auto;">
-                        <h2>計算機</h2>
-                        <div style="margin-bottom: 15px;">
-                            <label for="baseAmount">消費金額:</label>
-                            <input type="number" id="baseAmount" value="1000" min="1" oninput="calculateReward()" style="width: 100%; padding: 8px; box-sizing: border-box; font-size: 1.1em; margin-top: 5px;">
-                        </div>
-
-                        <div id="rewardComponents">
-                            </div>
-                        
-                        <div style="border-top: 2px solid #ddd; margin-top: 20px; padding-top: 15px;">
-                            <h3 style="margin: 0 0 10px 0; color: #dc3545;">總回饋金額: <span id="totalRewardAmount">30.00</span></h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="cardManagerView" class="main-view" style="display: none;">
-                <div id="cardManagerContent" class="content-wrapper">
-                     <h2 id="cardManagerTitle">信用卡總覽</h2>
-                     </div>
-            </div>
-            
-            <div id="paymentManagerView" class="main-view" style="display: none;">
-                <div id="paymentManagerContent" class="content-wrapper">
-                     <h2 id="paymentManagerTitle">支付方式總覽</h2>
-                    </div>
-            </div>
-
         </div>
-    </main>
+    </div>
     
+    <div id="mobileCardMenu" class="mobile-menu">
+        <div class="menu-header">
+            <h3>所有信用卡</h3>
+            <button class="close-btn" onclick="toggleCardMenu()">✕</button>
+        </div>
+        <div id="mobileCardButtons" class="button-list-container"></div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
