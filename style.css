@@ -463,4 +463,10 @@ button {
   .external-link-btn {
     flex: 0 0 auto;
   }
+  
+  #header-left h1 { font-size: 1.5em; padding-left: 10px; }
+    #fixed-header-content { padding: 10px 20px 10px 20px; }
+    #top-navigation { grid-template-columns: 1fr; }
+    .search-container input { padding-right: 12px; }
+    #external-links {
 }
