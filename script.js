@@ -2,7 +2,9 @@ const DEFAULT_CARDS = [
     {
         name: "Richart卡",
         isToggleCard: true,
-        cardNote: "~12/31 <a href='https://reurl.cc/bmrG6M' target='_blank'>詳情</a>\n單筆計算 無條件捨去 入帳日次二營業日回饋\n須設定台新帳戶扣繳台新信用卡帳款",
+        cardNote: "~12/31 <a href='https://reurl.cc/bmrG6M' target='_blank'>詳情</a>" +
+				"\n單筆計算 無條件捨去 入帳日次二營業日回饋" +
+				"\n須設定台新帳戶扣繳台新信用卡帳款",
         groups: [
             { 
                 name: "一般消費", 
@@ -171,7 +173,8 @@ const DEFAULT_CARDS = [
     {
         name: "CUBE卡",
         isToggleCard: true,
-        cardNote: "~12/31 <a href='https://reurl.cc/bmrGnd' target='_blank'>詳情</a>\n單筆計算 四捨五入 入帳日次二營業日回饋",
+        cardNote: "~12/31 <a href='https://reurl.cc/bmrGnd' target='_blank'>詳情</a>" +
+				"\n單筆計算 四捨五入 入帳日次二營業日回饋",
         groups: [
             { 
                 name: "一般消費", 
@@ -334,7 +337,7 @@ const DEFAULT_CARDS = [
             { 
                 name: "指定通路", 
                 needsToggle: false, 
-                groupNote: "2025/9/1~2025/12/31；於2025/12/22 16:00至2025/12/24 23:59開放登錄，加碼回饋4.5%，限量10,000名；每期上限2000", 
+                groupNote: "2025/9/1~2025/12/31\n於2025/12/22 16:00至2025/12/24 23:59開放登錄\n登錄加碼回饋4.5%，限量10,000名；每期上限2000", 
                 rewards: [
                 { merchant: "Uber Eats", percent: 5.0, note: "12/22登錄加碼4.5%" },
 				{ merchant: "Foodpanda", percent: 5.0, note: "12/22登錄加碼4.5%" },
@@ -359,13 +362,15 @@ const DEFAULT_CARDS = [
     {
         name: "國泰簽帳金融卡",
         isToggleCard: false,
-        cardNote: "~12/31 <a href='https://reurl.cc/89aj3j' target='_blank'>詳情</a>\n消費總金額 四捨五入\n限生日於1999年7月1日（含）後；現金回饋\n登錄網址：<a href='https://www.cathaybk.com.tw/promotion' target='_blank'>連結</a>",
+        cardNote: "~12/31 <a href='https://reurl.cc/89aj3j' target='_blank'>詳情</a> ；限生日於1999年7月1日（含）後" +
+			"\n帳單總金額 四捨五入 次月25日前回饋" +
+			"\n<a href='https://www.cathaybk.com.tw/promotion' target='_blank'>登錄網址</a>",
         groups: [
             { 
                 name: "指定支付", 
                 needsToggle: false, 
                 groupNote: "", 
-                rewards: [{ merchant: "LINE Pay", percent: 2.0, note: "現金回饋" }] 
+                rewards: [{ merchant: "LINE Pay", percent: 2.0, note: "現金回饋；無上限" }] 
             },
             { 
                 name: "指定通路", 
@@ -462,6 +467,34 @@ const DEFAULT_CARDS = [
 					{ merchant: "Trip.com", percent: 8.0, note: "限週二、五" },
 					{ merchant: "Klook", percent: 8.0, note: "限週二、五" },
 					{ merchant: "Agoda", percent: 8.0, note: "限週二、五" }
+                ] 
+            }
+        ]
+    },
+	{
+        name: "方案期限與特殊活動",
+        isToggleCard: true,
+        cardNote: "方案期間與加碼活動",
+        groups: [
+            { 
+                name: "方案期限", 
+                needsToggle: true, 
+                groupNote: "NA", 
+                rewards: [
+                    { merchant: "台新Richart卡", percent: 8.88, note: "12/31" },
+					{ merchant: "國泰CUBE卡", percent: 8.88, note: "12/31" },
+					{ merchant: "國泰蝦皮購物聯名卡", percent: 8.88, note: "12/31" },
+					{ merchant: "國泰簽帳金融卡", percent: 8.88, note: "12/31" },
+					{ merchant: "台新Gogoro Rewards卡", percent: 8.88, note: "12/31" },
+					{ merchant: "台新friDay聯名卡", percent: 8.88, note: "12/31" }
+                ] 
+            },
+            { 
+                name: "期間加碼", 
+                needsToggle: true, 
+                groupNote: "NA", 
+                rewards: [
+                    { merchant: "NA", percent: 6.66, note: "OO卡 ~XX/XX" }
                 ] 
             }
         ]
