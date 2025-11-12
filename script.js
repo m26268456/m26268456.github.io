@@ -481,20 +481,79 @@ const DEFAULT_CARDS = [
                 needsToggle: true, 
                 groupNote: "NA", 
                 rewards: [
-                    { merchant: "台新Richart卡", percent: 8.88, note: "12/31" },
-					{ merchant: "國泰CUBE卡", percent: 8.88, note: "12/31" },
-					{ merchant: "國泰蝦皮購物聯名卡", percent: 8.88, note: "12/31" },
-					{ merchant: "國泰簽帳金融卡", percent: 8.88, note: "12/31" },
-					{ merchant: "台新Gogoro Rewards卡", percent: 8.88, note: "12/31" },
-					{ merchant: "台新friDay聯名卡", percent: 8.88, note: "12/31" }
+                    { merchant: "台新Richart卡", percent: 0.168, note: "12/31" },
+					{ merchant: "國泰CUBE卡", percent: 0.168, note: "12/31" },
+					{ merchant: "國泰蝦皮購物聯名卡", percent: 0.168, note: "12/31" },
+					{ merchant: "國泰簽帳金融卡", percent: 0.168, note: "12/31" },
+					{ merchant: "台新Gogoro Rewards卡", percent: 0.168, note: "12/31" },
+					{ merchant: "台新friDay聯名卡", percent: 0.168, note: "12/31" }
                 ] 
             },
             { 
-                name: "期間加碼", 
+                name: "CUBE 1207", 
                 needsToggle: true, 
-                groupNote: "NA", 
+                groupNote: "~12/07 領券加碼10%，活動上限500", 
                 rewards: [
-                    { merchant: "NA", percent: 6.66, note: "OO卡 ~XX/XX" }
+                    { merchant: "博客來-線上", percent: 10, note: "0%加碼10%" },
+					{ merchant: "臺虎精釀", percent: 10, note: "0%加碼10%" },
+					{ merchant: "臺虎信義", percent: 10, note: "0%加碼10%" },
+					{ merchant: "A Train Leads The Way To Jazz", percent: 10, note: "0%加碼10%" },
+					{ merchant: "B Line by A Train", percent: 10, note: "0%加碼10%" },
+					{ merchant: "C Park by A Train", percent: 10, note: "0%加碼10%" },
+					{ merchant: "D Town by A Train", percent: 10, note: "0%加碼10%" },
+					{ merchant: "East Village by A Train", percent: 10, note: "0%加碼10%" },
+					{ merchant: "F Gallery by A Train", percent: 10, note: "0%加碼10%" },
+					{ merchant: "U Square by A Train", percent: 10, note: "0%加碼10%" },
+					{ merchant: "逐愛轉運站放感情", percent: 10, note: "0%加碼10%" },
+					{ merchant: "童裏心柑仔店 OMAR 放感情", percent: 10, note: "0%加碼10%" },
+					{ merchant: "MUIM TAIPEI 放感情", percent: 10, note: "0%加碼10%" },
+					{ merchant: "ODIN 士林放感情", percent: 10, note: "0%加碼10%" },
+					{ merchant: "離城放感情", percent: 10, note: "0%加碼10%" },
+					{ merchant: "VENDER", percent: 10, note: "0%加碼10%" },
+					{ merchant: "栖.Habitatto", percent: 10, note: "0%加碼10%" },
+					{ merchant: "Phowa", percent: 10, note: "0%加碼10%" },
+					{ merchant: "赤崁中藥行", percent: 10, note: "0%加碼10%" },
+					{ merchant: "Aqua Vitae Bistro", percent: 10, note: "0%加碼10%" },
+					{ merchant: "Rumway", percent: 10, note: "0%加碼10%" },
+					{ merchant: "小島茶酒", percent: 10, note: "0%加碼10%" },
+					{ merchant: "健身工廠 Fitness Factory", percent: 10, note: "0%加碼10%" },
+					{ merchant: "World Gym 健身俱樂部", percent: 10, note: "0%加碼10%" },
+					{ merchant: "Hypercore 超核心健身中心", percent: 10, note: "0%加碼10%" },
+					{ merchant: "虎鐵健身 X 器械彼拉提斯", percent: 10, note: "0%加碼10%" },
+					{ merchant: "KX Pilates", percent: 10, note: "0%加碼10%" },
+					{ merchant: "國道休息站", percent: 10, note: "0%加碼10%；中壢｜湖口｜古坑｜關西｜南投｜西湖｜西螺｜泰安｜仁德｜清水｜東山｜關廟" },
+					{ merchant: "錢櫃", percent: 10, note: "0%加碼10%" },
+					{ merchant: "享溫馨", percent: 10, note: "0%加碼10%" },
+					{ merchant: "NETFLIX", percent: 13.3, note: "3.3%加碼10%，3.3%玩數位" },
+					{ merchant: "YouTube Premium", percent: 13.3, note: "3.3%加碼10%，3.3%玩數位" },
+					{ merchant: "ChatGPT", percent: 13.3, note: "3.3%加碼10%，3.3%玩數位" },
+					{ merchant: "寶雅Poya-實體", percent: 10.3, note: "0.3%加碼10%，0.3%一般" },
+					{ merchant: "唐吉訶德-實體", percent: 10.3, note: "0.3%加碼10%，0.3%一般" },
+					{ merchant: "松本清-實體", percent: 10.3, note: "0.3%加碼10%，0.3%一般" },
+					{ merchant: "無印良品-線上", percent: 10.3, note: "0.3%加碼10%，0.3%一般；不含Apple Pay" },
+					{ merchant: "日藥本舖-實體", percent: 10.3, note: "0.3%加碼10%，0.3%一般；不含百貨門市" },
+					{ merchant: "三友藥妝 Tomod's-實體", percent: 10.3, note: "0.3%加碼10%，0.3%一般；不含百貨門市" }
+                ] 
+            },
+			{ 
+                name: "CUBE 1231", 
+                needsToggle: true, 
+                groupNote: "~1231 領券加碼3%，活動上限300", 
+                rewards: [
+                    { merchant: "星巴客-線上/自動儲值", percent: 6.3, note: "3.3%加碼3%，3.3%樂饗購" }
+                ] 
+            },
+			{ 
+                name: "CUBE 1231", 
+                needsToggle: true, 
+                groupNote: "~1231 領券加碼10%，活動上限100", 
+                rewards: [
+                    { merchant: "UNIQLO", percent: 10, note: "0%加碼10%" },
+					{ merchant: "GU", percent: 10, note: "0%加碼10%" },
+					{ merchant: "ZARA", percent: 10, note: "0%加碼10%" },
+					{ merchant: "NET", percent: 10, note: "0%加碼10%" },
+					{ merchant: "GAP", percent: 10, note: "0%加碼10%" },
+					{ merchant: "H&M", percent: 10, note: "0%加碼10%" }
                 ] 
             }
         ]
