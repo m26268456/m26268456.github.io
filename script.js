@@ -186,7 +186,7 @@ const DEFAULT_CARDS = [
             { 
                 name: "熊熊買下去", 
                 needsToggle: true, 
-                groupNote: "1%加碼2%，帳單上限150", 
+                groupNote: "1%加碼2%，帳單上限150，MAX=7500", 
                 rewards: [
 					//行動支付
                     { merchant: "LINE Pay", percent: 3.0, note: "不含7-11、全家" },
@@ -308,7 +308,7 @@ const DEFAULT_CARDS = [
 			{ 
                 name: "熊熊找樂子", 
                 needsToggle: false, 
-                groupNote: "0%加碼10%，活動上限100", 
+                groupNote: "0%加碼10%，活動上限100，MAX=1000", 
                 rewards: [
 					{ merchant: "Disney+", percent: 10, note: "不含代扣繳(如Google、PayPal)" },
 					{ merchant: "nitando", percent: 10, note: "不含代扣繳(如Google、PayPal)" },
@@ -485,7 +485,7 @@ const DEFAULT_CARDS = [
             { 
                 name: "指定通路", 
                 needsToggle: false, 
-                groupNote: "2025/9/1~2025/12/31\n於2025/12/22 16:00至2025/12/24 23:59開放登錄\n登錄加碼回饋4.5%，限量10,000名；每期上限2000", 
+                groupNote: "2025/9/1~2025/12/31\n於2025/12/22 16:00至2025/12/24 23:59開放登錄\n登錄加碼回饋4.5%，限量10,000名，活動上限2000，MAX=44444", 
                 rewards: [
                 { merchant: "Uber Eats", percent: 5.0, note: "12/22登錄加碼4.5%" },
 				{ merchant: "Foodpanda", percent: 5.0, note: "12/22登錄加碼4.5%" },
@@ -523,7 +523,7 @@ const DEFAULT_CARDS = [
             { 
                 name: "指定通路", 
                 needsToggle: false, 
-                groupNote: "每月上限150", 
+                groupNote: "每月上限150，MAX=5000", 
                 rewards: [
                     { merchant: "蝦皮購物(Shopee)", percent: 3.0, note: "現金回饋" },
 					{ merchant: "麥當勞", percent: 3.0, note: "現金回饋；使用LINE Pay為2%" },
@@ -552,7 +552,7 @@ const DEFAULT_CARDS = [
             { 
                 name: "指定通路", 
                 needsToggle: false, 
-                groupNote: "扣繳加碼-單筆上限100，帳單上限500", 
+                groupNote: "扣繳加碼 單筆上限100，帳單上限500，MAX單=4000，MAX=20000", 
                 rewards: [
                     { merchant: "7-11", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
 					{ merchant: "全家便利商店", percent: 3.0, note: "基本0.5%，資費扣繳加碼2.5%" },
@@ -594,13 +594,13 @@ const DEFAULT_CARDS = [
             { 
                 name: "遠傳電信帳單代扣繳", 
                 needsToggle: false, 
-                groupNote: "含代收；帳單上限300", 
+                groupNote: "含代收；帳單上限300，MAX=10000", 
                 rewards: [{ merchant: "遠傳電信帳單代扣繳", percent: 3.0, note: "" }] 
             },
             { 
                 name: "指定通路", 
                 needsToggle: false, 
-                groupNote: "帳單上限1000", 
+                groupNote: "帳單上限1000，MAX=12500", 
                 rewards: [
                     { merchant: "遠傳全台門市", percent: 8.0, note: "限週二、五" },
 					{ merchant: "friDay線上購物", percent: 8.0, note: "限週二、五" },
@@ -641,7 +641,7 @@ const DEFAULT_CARDS = [
             { 
                 name: "CUBE 1207", 
                 needsToggle: true, 
-                groupNote: "~12/07 領券加碼10%，活動上限500", 
+                groupNote: "~12/07 領券加碼10%，活動上限500，MAX=5000", 
                 rewards: [
                     { merchant: "博客來-線上", percent: 10, note: "0%加碼10%" },
 					{ merchant: "臺虎精釀", percent: 10, note: "0%加碼10%" },
@@ -687,7 +687,7 @@ const DEFAULT_CARDS = [
 			{ 
                 name: "CUBE 1231", 
                 needsToggle: true, 
-                groupNote: "~1231 領券加碼3%，活動上限300", 
+                groupNote: "~1231 領券加碼3%，活動上限300，MAX=10000", 
                 rewards: [
                     { merchant: "星巴客-線上/自動儲值", percent: 6.3, note: "3.3%加碼3%，3.3%樂饗購" }
                 ] 
@@ -695,7 +695,7 @@ const DEFAULT_CARDS = [
 			{ 
                 name: "CUBE 1231", 
                 needsToggle: true, 
-                groupNote: "~1231 領券加碼10%，活動上限100", 
+                groupNote: "~1231 領券加碼10%，活動上限100，MAX=1000", 
                 rewards: [
                     { merchant: "UNIQLO", percent: 10, note: "0%加碼10%" },
 					{ merchant: "GU", percent: 10, note: "0%加碼10%" },
